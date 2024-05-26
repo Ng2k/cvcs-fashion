@@ -9,7 +9,6 @@ Fornisce metodi per caricare il modello SSD di NVIDIA e le relative utility di e
 """
 
 import torch
-import numpy as np
 
 from src.ssd.ssd_model import SSDModel
 
@@ -33,37 +32,11 @@ class NVidiaSSDModel(SSDModel):
         self.model.to('cuda' if torch.cuda.is_available() else 'cpu')
         self.model.eval()
 
-    def _prepare_image(self, image_url: str) -> np.ndarray:
-        """Ritorna l'immagine come un array numpy.
-
-        Args:
-        -------
-            image_url (str): percorso immagine
-
-        Returns:
-        -------
-            np.ndarray: array numpy che rappresenta l'immagine
-        """
-        return self.utils.prepare_input(image_url)
-
-    def _prepare_tensor(self, images_list: list) -> torch.Tensor:
-        """Ritorna l'immagine come un tensore PyTorch.
-
-        Args:
-        -------
-            images_list (list): lista di immagini
-
-        Returns:
-        -------
-            torch.Tensor: tensore PyTorch che rappresenta l'immagine
-        """
-        return self.utils.prepare_tensor(images_list)
-
     def load_image(self, image_url: str) -> dict:
-        image_numpy = self._prepare_image(image_url)
+        image_numpy = self.utils.prepare_input(image_url)
         return {
             "image_numpy": image_numpy,
-            "image_tensor": self._prepare_tensor([image_numpy])
+            "image_tensor": self.utils.prepare_tensor([image_numpy])
         }
 
     def find_best_bboxes(self, image_tensor: torch.Tensor) -> list:

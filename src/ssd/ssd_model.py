@@ -34,8 +34,14 @@ class SSDModel(ABC):
 
         Returns:
         -------
-            dict `{ "image_numpy": np.ndarray, "image_tensor": torch.Tensor}`:
-                dizionario con l'immagine caricata come array numpy e tensore PyTorch
+            dizionario con l'immagine caricata come array numpy e tensore PyTorch
+
+            ```python
+            {
+                "image_numpy": np.ndarray,
+                "image_tensor": torch.Tensor
+            }
+            ```
         """
 
     @abstractmethod
