@@ -8,6 +8,7 @@ Interfaccia che specifica i metodi che devono essere implementati da qualsiasi m
 @Author: Francesco Mancinelli
 """
 from abc import ABC, abstractmethod
+import torch
 
 class SSDModel(ABC):
     """
@@ -15,18 +16,37 @@ class SSDModel(ABC):
 
     Metodi
     -------
-        load_model() -> None
+        load_image(self, image_url: str) -> dict
             Metodo astratto
-            Carica il modello SSD.
-        load_utils() -> None
+            Carica l'immagine da un URL
+        find_best_bboxes(self, image_tensor: torch.Tensor) -> list
             Metodo astratto
-            Carica le utility per il modello SSD.
+            Trova le migliori bounding box per l'immagine.
     """
 
     @abstractmethod
-    def load_model(self):
-        pass
+    def load_image(self, image_url: str) -> dict:
+        """Carica l'immagine in 2 formati: numpy e tensore PyTorch.
+
+        Args:
+        -------
+            image_url (str): percorso immagine
+
+        Returns:
+        -------
+            dict `{ "image_numpy": np.ndarray, "image_tensor": torch.Tensor}`:
+                dizionario con l'immagine caricata come array numpy e tensore PyTorch
+        """
 
     @abstractmethod
-    def load_utils(self):
-        pass
+    def find_best_bboxes(self, image_tensor: torch.Tensor) -> list:
+        """ Trova le migliori bounding box per l'immagine.
+
+        Args:
+        -------
+            image (torch.Tensor): immagine da processare
+
+        Returns:
+        -------
+            detection (list): lista delle detection
+        """

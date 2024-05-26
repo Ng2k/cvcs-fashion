@@ -6,7 +6,7 @@ Fornisce metodi per caricare un'immagine, elaborarla e disegnare dei bounding bo
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
 """
-import torch
+
 import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
@@ -27,73 +27,33 @@ class SingleShotDetector():
             Attributo privato
             Threshold di confidenza per la detection degli oggetti.
             Gli oggetti con un punteggio di confidenza inferiore a questa soglia vengono ignorati.
-        _image : np.ndarray
-            Attributo privato
-            L'immagine da elaborare, rappresentata come un array NumPy.
-        _image_tensor : torch.Tensor
-            Attributo privato
-            L'immagine da elaborare, rappresentata come un tensore PyTorch.
-        ssd_model : any
-                Modello SSD.
-        utils : any
-            Utils modello SSD.
+        ssd_model : SSDModel
+            Modello SSD.
     """
 
     _CONFIDENCE: float = 0.40
-
-    _image: np.ndarray
-    _image_tensor: torch.Tensor
 
     def __init__(self, model: SSDModel):
         """
         Inizializza un nuovo oggetto SingleShotDetector.
         """
-        self.ssd_model = model.load_model()
-        self.utils = model.load_utils()
-        self._image = None
-        self._image_tensor = None
+        self._ssd_model: SSDModel = model
 
-    def _load_image(self, image_url: str) -> None:
-        """ Funzione per il caricamento dell'immagine.
-
-        Args:
-        -------
-            image_url (str): url dell'immagine
-        """
-        self._image = self.utils.prepare_input(image_url)
-        self._image_tensor = self.utils.prepare_tensor([self._image])
-
-    def _find_best_bboxes(self, image_tensor: torch.Tensor) -> list:
-        """ Trova le migliori bounding box per l'immagine.
-
-        Args:
-        -------
-            image (torch.Tensor): immagine da processare
-
-        Returns:
-        -------
-            detection (list): lista delle detection
-        """
-        with torch.no_grad():
-            detections_batch = self.ssd_model(image_tensor)
-
-        results_per_input = self.utils.decode_results(detections_batch)
-        best_results_per_input = [
-            self.utils.pick_best(results, self._CONFIDENCE) for results in results_per_input
-        ]
-
-        return best_results_per_input
-
-    def _retrieve_image_cropped(self) -> Image:
+    def _retrieve_image_cropped(self, image_numpy: np.ndarray, bboxes: list) -> Image:
         """Ritorna l'immagine ritagliata in base alla detection.
+
+        Args:
+        -------
+            image_numpy (np.ndarray): immagine caricata come array numpy
+            image_tensor (torch.Tensor): immagine caricata come tensore pytorch
 
         Returns:
         -------
             Image: immagine ritagliata
         """
-        for image_result in self._find_best_bboxes(self._image_tensor):
+        for image_result in bboxes:
             for _, bbox in enumerate(image_result[0]):
-                return ImageProcessor.crop_image_from_bbox(self._image, bbox)
+                return ImageProcessor.crop_image_from_bbox(image_numpy, bbox)
 
     def detect_person_in_image(self, image_url: str) -> None:
         """Funzione per la detection
@@ -102,5 +62,11 @@ class SingleShotDetector():
         -------
             image_url (str): url dell'immagine
         """
-        self._load_image(image_url)
-        plt.imshow(self._retrieve_image_cropped())
+        image_loaded = self._ssd_model.load_image(image_url)
+        image_numpy, image_tensor = image_loaded["image_numpy"], image_loaded["image_tensor"]
+
+        bboxes = self._ssd_model.find_best_bboxes(image_tensor)
+
+        image_cropped = self._retrieve_image_cropped(image_numpy, bboxes)
+
+        plt.imshow(image_cropped)
