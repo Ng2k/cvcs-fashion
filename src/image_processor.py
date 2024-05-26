@@ -17,8 +17,8 @@ class ImageProcessor:
 
     Attributi
     ----------
-    image : PIL.Image
-        L'immagine da elaborare.
+        image : PIL.Image
+            L'immagine da elaborare.
     """
 
     @staticmethod
@@ -40,3 +40,40 @@ class ImageProcessor:
                 L'immagine ritagliata.
         """
         return input_image.crop(crop_coordinates)
+
+    @staticmethod
+    def tilt_image(input_image: Image) -> Image:
+        """
+        Inclina l'immagine data le coordinate di un tensore PyTorch.
+
+        Parametri
+        ----------
+            input_image : PIL.Image
+                L'immagine da inclinare.
+
+        Ritorna
+        -------
+            PIL.Image
+                L'immagine inclinata.
+        """
+        return input_image
+
+    @staticmethod
+    def resize_image(input_image: Image, size: tuple) -> Image:
+        """
+        Ridimensiona l'immagine data le dimensioni.
+
+        Parametri
+        ----------
+            input_image : PIL.Image
+                L'immagine da ridimensionare.
+            size : tuple
+                Dimensioni della nuova immagine.
+                (width, height)
+
+        Ritorna
+        -------
+            PIL.Image
+                L'immagine ridimensionata.
+        """
+        return input_image.resize(size)
