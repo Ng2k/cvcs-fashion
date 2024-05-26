@@ -4,6 +4,8 @@ Implementazione dell'interfaccia SSDModel per il modello SSD di NVIDIA.
 Fornisce metodi per caricare il modello SSD di NVIDIA e le relative utility di elaborazione.
 
 @Author Nicola Guerra
+@Author: Davide Lupo
+@Author: Francesco Mancinelli
 """
 
 import torch

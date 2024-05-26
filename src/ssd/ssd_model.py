@@ -4,6 +4,8 @@ Questo modulo definisce una classe base astratta per i modelli SSD (Single Shot 
 Interfaccia che specifica i metodi che devono essere implementati da qualsiasi modello SSD concreto.
 
 @Author Nicola Guerra
+@Author: Davide Lupo
+@Author: Francesco Mancinelli
 """
 from abc import ABC, abstractmethod
 
