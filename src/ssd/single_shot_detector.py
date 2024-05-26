@@ -62,8 +62,8 @@ class SingleShotDetector():
         self._image = self.utils.prepare_input(image_url)
         self._image_tensor = self.utils.prepare_tensor([self._image])
 
-    def _run(self, image_tensor: torch.Tensor) -> list:
-        """ Funzione per l'esecuzione del modello
+    def _find_best_bboxes(self, image_tensor: torch.Tensor) -> list:
+        """ Trova le migliori bounding box per l'immagine.
 
         Args:
         -------
@@ -95,7 +95,7 @@ class SingleShotDetector():
         -------
             list: lista dei risultati
         """
-        for image_result in self._run(self._image_tensor):
+        for image_result in self._find_best_bboxes(self._image_tensor):
             _, ax = plt.subplots(1)
 
             # immagine denormalizzata
@@ -121,8 +121,8 @@ class SingleShotDetector():
 
             plt.show()
 
-    def detection(self, image_url: str) -> None:
-        """Funzione per la detection
+    def detect_person_in_image(self, image_url: str) -> None:
+        """Funzione per la detection della persona nell'image
 
         Args:
         -------
