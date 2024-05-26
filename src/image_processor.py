@@ -15,11 +15,6 @@ class ImageProcessor:
 
     Questa classe fornisce un metodo per ritagliare un'immagine 
     data le coordinate di un tensore PyTorch.
-
-    Attributi
-    ----------
-        image : PIL.Image
-            L'immagine da elaborare.
     """
 
     @staticmethod
