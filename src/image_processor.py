@@ -7,6 +7,7 @@ Classe responsabile per l'elaborazione delle immagini.
 """
 
 from PIL import Image
+import numpy as np
 
 class ImageProcessor:
     """
@@ -22,24 +23,30 @@ class ImageProcessor:
     """
 
     @staticmethod
-    def crop_image(input_image: Image, crop_coordinates: tuple) -> Image:
+    def crop_image_from_bbox(image: np.ndarray, bbox: tuple) -> Image:
         """
-        Ritaglia l'immagine data le coordinate di un tensore PyTorch.
+        Ritaglia l'immagine, tensore pytorch, data delle coordinate.
 
         Parametri
         ----------
-            input_image : PIL.Image
+            input_image : np.ndarray
                 L'immagine da ritagliare.
-            crop_coordinates : tuple
-                Tupla di coordinate per il crop.
-                (left, top, right, bottom)
+            bbox : tuple
+                Tupla di coordinate della bounding box.
 
         Ritorna
         -------
-            PIL.Image
+            torch.Tensor
                 L'immagine ritagliata.
         """
-        return input_image.crop(crop_coordinates)
+
+        left, bot, right, top = bbox
+        x, y, w, h = [val * 300 for val in [left, bot, right - left, top - bot]]
+        image = image / 2 + 0.5
+        image = Image.fromarray(np.uint8(image * 255))
+        image = image.crop((x, y, x + w, y + h))
+
+        return image
 
     @staticmethod
     def tilt_image(input_image: Image) -> Image:
