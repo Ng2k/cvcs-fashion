@@ -34,5 +34,5 @@ Per installarlo leggere la repository su github (ma basta che lo abbia solo una 
 ## Authors
 
 - [Nicola Guerra](https://github.com/Ng2k)
-- [Francesco Mancinelli](https://github.com/agente2305)
+- [Francesco Mancinelli](https://github.com/fmanc23)
 - [Davide Lupo](https://github.com/davidel01)

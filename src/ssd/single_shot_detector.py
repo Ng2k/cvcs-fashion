@@ -18,16 +18,13 @@ class SingleShotDetector():
     """
     Classe usata per rappresentare un Single Shot Detector (SSD) model.
 
-    Usa un modello SSD pre-addestrato da NVIDIA's Deep Learning Examples.
-    Fornisce metodi per caricare un'immagine, elaborarla e disegnare dei bounding box.
-
     Attributi
     ----------
         _CONFIDENCE : float
             Attributo privato
             Threshold di confidenza per la detection degli oggetti.
             Gli oggetti con un punteggio di confidenza inferiore a questa soglia vengono ignorati.
-        ssd_model : SSDModel
+        _ssd_model : SSDModel
             Modello SSD.
     """
 
