@@ -27,7 +27,7 @@ class ClothesSegmentation():
         Inizializza un nuovo oggetto SingleShotDetector.
         """
         self._segmentation_model: SegmentationModel = model
-    
+
     def apply_segmentation(self, image: Image) -> Image:
         """Applica la segmentazione all'immagine.
 
