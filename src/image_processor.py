@@ -8,6 +8,7 @@ Classe responsabile per l'elaborazione delle immagini.
 
 from PIL import Image
 import numpy as np
+import cv2
 
 class ImageProcessor:
     """
@@ -18,30 +19,32 @@ class ImageProcessor:
     """
 
     @staticmethod
-    def crop_image_from_bbox(image: np.ndarray, bbox: tuple) -> Image:
+    def crop_image_from_bbox(image: np.ndarray, bbox: tuple) -> np.ndarray:
         """
-        Ritaglia l'immagine, tensore pytorch, data delle coordinate.
+        Ritaglia l'immagine data delle coordinate della bounding box.
 
         Parametri
         ----------
-            input_image : np.ndarray
-                L'immagine da ritagliare.
-            bbox : tuple
-                Tupla di coordinate della bounding box.
+        image : np.ndarray
+            L'immagine da ritagliare.
+        bbox : tuple
+            Tupla di coordinate della bounding box.
 
         Ritorna
         -------
-            torch.Tensor
-                L'immagine ritagliata.
+        np.ndarray
+            L'immagine ritagliata.
         """
-
         left, bot, right, top = bbox
-        x, y, w, h = [val * 300 for val in [left, bot, right - left, top - bot]]
-        image = image / 2 + 0.5
-        image = Image.fromarray(np.uint8(image * 255))
-        image = image.crop((x, y, x + w, y + h))
+        x, y, w, h = [int(val * 300) for val in [left, bot, right - left, top - bot]]
 
-        return image
+        # Controllo se l'immagine è [0, 255]
+        image = np.uint8(image * 255)
+
+        # Crop con OpenCV
+        cropped_image = image[y:y+h, x:x+w]
+
+        return cropped_image
 
     @staticmethod
     def tilt_image(input_image: Image) -> Image:
@@ -61,31 +64,33 @@ class ImageProcessor:
         return input_image
 
     @staticmethod
-    def resize_image(input_image: Image, max_size: int) -> Image:
+    def resize_image(image: np.ndarray, max_size: int) -> np.ndarray:
         """
-        Ridimensiona l'immagine data le dimensioni.
-        Mantiene aspect ratio e qualità immagine al meglio possibile
+        Ridimensiona l'immagine mantenendo l'aspect ratio.
 
         Parametri
         ----------
-            input_image : PIL.Image
+            image : np.ndarray
                 L'immagine da ridimensionare.
             max_size : int
-                Dimensione massima dell'immagine
+                La dimensione massima del lato più lungo dell'immagine ridimensionata.
 
         Ritorna
         -------
-            PIL.Image
+            np.ndarray
                 L'immagine ridimensionata.
         """
-        original_width, original_height = input_image.size
-        aspect_ratio = original_width / original_height
+        height, width = image.shape[:2]
 
-        if original_width > original_height:
-            new_width = max_size
-            new_height = int(max_size / aspect_ratio)
+        # Determinazione scale factor mantenendo aspect ratio
+        if height > width:
+            scale_factor = max_size / float(height)
         else:
-            new_height = max_size
-            new_width = int(max_size * aspect_ratio)
+            scale_factor = max_size / float(width)
 
-        return input_image.resize((new_width, new_height))
+        new_size = (int(width * scale_factor), int(height * scale_factor))
+
+        # Resize immagine usanto INTER_AREA per meno rumore possibile
+        resized_image = cv2.resize(image, new_size, interpolation=cv2.INTER_AREA)
+
+        return resized_image

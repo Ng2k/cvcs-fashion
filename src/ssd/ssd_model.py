@@ -30,18 +30,18 @@ class SSDModel(ABC):
 
         Args:
         -------
-            image_url (str): percorso immagine
+            image_url: str
+              percorso immagine
 
         Returns:
         -------
-            dizionario con l'immagine caricata come array numpy e tensore PyTorch
-
             ```python
             {
                 "image_numpy": np.ndarray,
                 "image_tensor": torch.Tensor
             }
-            ```
+            ```:
+              dizionario con l'immagine caricata come array numpy e tensore PyTorch
         """
 
     @abstractmethod

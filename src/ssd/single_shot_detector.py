@@ -8,8 +8,6 @@ Fornisce metodi per caricare un'immagine, elaborarla e disegnare dei bounding bo
 """
 
 import numpy as np
-from matplotlib import pyplot as plt
-from PIL import Image
 
 from src.image_processor import ImageProcessor
 from src.ssd.ssd_model import SSDModel
@@ -36,34 +34,39 @@ class SingleShotDetector():
         """
         self._ssd_model: SSDModel = model
 
-    def _retrieve_image_cropped(self, image_numpy: np.ndarray, bboxes: list) -> Image:
+    def _retrieve_image_cropped(self, image_numpy: np.ndarray, bboxes: list) -> np.ndarray:
         """Ritorna l'immagine ritagliata in base alla detection.
 
         Args:
         -------
-            image_numpy (np.ndarray): immagine caricata come array numpy
-            bboxes (list): bounding box
+            image_numpy: np.ndarray
+                immagine caricata come array numpy
+            bboxes: list
+                bounding box
 
         Returns:
         -------
-            Image: immagine ritagliata
+            np.ndarray:
+                immagine ritagliata
         """
         for image_result in bboxes:
             for _, bbox in enumerate(image_result[0]):
                 return ImageProcessor.crop_image_from_bbox(image_numpy, bbox)
 
-    def detect_person_in_image(self, image_url: str) -> None:
+    def detect_person_in_image(self, image_url: str) -> np.ndarray:
         """Funzione per la detection
 
         Args:
         -------
-            image_url (str): url dell'immagine
+            image_url: str
+                url dell'immagine
+        
+        Return:
+        -------
+            np.ndarray:
+                immagine con la persona individuata
         """
         image_loaded = self._ssd_model.load_image(image_url)
         image_numpy, image_tensor = image_loaded["image_numpy"], image_loaded["image_tensor"]
-
         bboxes = self._ssd_model.find_best_bboxes(image_tensor)
-
-        image_cropped = self._retrieve_image_cropped(image_numpy, bboxes)
-
-        plt.imshow(image_cropped)
+        return self._retrieve_image_cropped(image_numpy, bboxes)

@@ -4,3 +4,4 @@ scikit-image
 matplotlib
 torch
 transformers
+opencv-python
