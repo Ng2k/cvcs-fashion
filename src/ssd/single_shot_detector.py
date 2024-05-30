@@ -42,7 +42,7 @@ class SingleShotDetector():
         Args:
         -------
             image_numpy (np.ndarray): immagine caricata come array numpy
-            image_tensor (torch.Tensor): immagine caricata come tensore pytorch
+            bboxes (list): bounding box
 
         Returns:
         -------
