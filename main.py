@@ -72,19 +72,29 @@ def segmentation(image : Image) -> Image:
     return segmented_image
 
 def main():
+    img_path = "OIP2"
+    img_ext = ".jpg"
     # Ridimensiona l'immagine
-    resized_image = image_resize("./test_2.png", 300)
+    size = (300, 300)
+    resized_image = image_resize("./" + img_path + img_ext, size)
 
-    resized_image_pil = Image.fromarray(resized_image.astype(np.uint8))
-    resized_image_pil.save("./static/test_2_resized.png")
+    resized_image_PIL = Image.fromarray(resized_image.astype(np.uint8))
+    resized_image_PIL.save("./" + img_path + "_resized" + img_ext)
 
     # Esegue la rilevazione della persona
-    detected_image = ssd_detection("./static/test_2_resized.png")
+    detected_image = ssd_detection("./" + img_path + "_resized" + img_ext)
+    detected_image_PIL = Image.fromarray(detected_image.astype(np.uint8))
+    detected_image_PIL.save("./" + img_path + "_crop" + img_ext)
+
+    denoise_image = ImageProcessor.denoise_image(detected_image.astype(np.uint8))
+    denoise_image_PIL = Image.fromarray(denoise_image.astype(np.uint8))
+
     # Applica la segmentazione dei vestiti
-    segmented_image = segmentation(Image.fromarray(detected_image.astype(np.uint8)))
+    segmented_image = segmentation(denoise_image_PIL)
 
     # Mostra l'immagine segmentata
     plt.imshow(segmented_image)
+
 
 if __name__ == "__main__":
     main()
