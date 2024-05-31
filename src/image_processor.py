@@ -6,7 +6,6 @@ Classe responsabile per l'elaborazione delle immagini.
 @Author: Francesco Mancinelli
 """
 
-from PIL import Image
 import numpy as np
 import cv2
 
@@ -19,35 +18,34 @@ class ImageProcessor:
     """
 
     @staticmethod
-    def crop_image_from_bbox(image: np.ndarray, bbox: tuple) -> np.ndarray:
+    def crop_image_from_bbox(input_image: np.ndarray, bbox: tuple) -> np.ndarray:
         """
         Ritaglia l'immagine data delle coordinate della bounding box.
 
         Parametri
         ----------
-        image : np.ndarray
-            L'immagine da ritagliare.
-        bbox : tuple
-            Tupla di coordinate della bounding box.
+			image : np.ndarray
+				L'immagine da ritagliare.
+			bbox : tuple
+				Tupla di coordinate della bounding box.
 
         Ritorna
         -------
-        np.ndarray
-            L'immagine ritagliata.
+			np.ndarray
+				L'immagine ritagliata.
         """
         left, bot, right, top = bbox
         x, y, w, h = [int(val * 300) for val in [left, bot, right - left, top - bot]]
 
-        # Controllo se l'immagine è [0, 255]
-        image = np.uint8(image * 255)
+        image_normalized: np.ndarray = (input_image / 2 + 0.5) * 255
 
-        # Crop con OpenCV
-        cropped_image = image[y:y+h, x:x+w]
+        # Crop
+        image_cropped: np.ndarray = image_normalized[y:y+h, x:x+w]
 
-        return cropped_image
+        return image_cropped
 
     @staticmethod
-    def tilt_image(input_image: Image) -> Image:
+    def tilt_image(input_image: np.ndarray) -> np.ndarray:
         """
         Inclina l'immagine data le coordinate di un tensore PyTorch.
 
