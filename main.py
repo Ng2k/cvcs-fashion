@@ -72,25 +72,37 @@ def segmentation(image : Image) -> Image:
     return segmented_image
 
 def main():
-    img_path = "OIP2"
+    """
+    Funzione principale dello script. Esegue i seguenti passaggi:
+
+    1. Ridimensiona l'immagine di input a una dimensione fissa.
+    3. Esegue il rilevamento della persona sull'immagine ridimensionata utilizzando un modello SSD.
+    5. Denoisa l'immagine rilevata.
+    6. Applica la segmentazione dei vestiti sull'immagine denoisata.
+    7. Mostra l'immagine segmentata.
+
+    Nota:   Questa funzione non restituisce nulla.
+            Salva i risultati intermedi e finali su disco e mostra il risultato finale.
+    """
+    img_path = "image-test"
     img_ext = ".jpg"
     # Ridimensiona l'immagine
     size = (300, 300)
     resized_image = image_resize("./" + img_path + img_ext, size)
 
-    resized_image_PIL = Image.fromarray(resized_image.astype(np.uint8))
-    resized_image_PIL.save("./" + img_path + "_resized" + img_ext)
+    resized_image_pil = Image.fromarray(resized_image.astype(np.uint8))
+    resized_image_pil.save("./" + img_path + "_resized" + img_ext)
 
     # Esegue la rilevazione della persona
     detected_image = ssd_detection("./" + img_path + "_resized" + img_ext)
-    detected_image_PIL = Image.fromarray(detected_image.astype(np.uint8))
-    detected_image_PIL.save("./" + img_path + "_crop" + img_ext)
+    detected_image_pil = Image.fromarray(detected_image.astype(np.uint8))
+    detected_image_pil.save("./" + img_path + "_crop" + img_ext)
 
     denoise_image = ImageProcessor.denoise_image(detected_image.astype(np.uint8))
-    denoise_image_PIL = Image.fromarray(denoise_image.astype(np.uint8))
+    denoise_image_pil = Image.fromarray(denoise_image.astype(np.uint8))
 
     # Applica la segmentazione dei vestiti
-    segmented_image = segmentation(denoise_image_PIL)
+    segmented_image = segmentation(denoise_image_pil)
 
     # Mostra l'immagine segmentata
     plt.imshow(segmented_image)
