@@ -48,4 +48,10 @@ class NVidiaSSDModel(SSDModel):
             self.utils.pick_best(results, self._CONFIDENCE) for results in results_per_input
         ]
 
-        return best_results_per_input
+        bboxes = best_results_per_input[0][0] #accedo alla lista di bound box
+        classes = best_results_per_input[0][1] #accedo alla lista delle classi individuate
+
+        bboxes = bboxes[classes == 1]
+        classes = classes[classes == 1]
+
+        return bboxes[0] #se ho più persone prendo il bounding box della prima

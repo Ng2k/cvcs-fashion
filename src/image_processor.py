@@ -83,7 +83,7 @@ class ImageProcessor:
         resized_image = cv2.resize(image, size, interpolation = cv2.INTER_AREA)
 
         return resized_image
-      
+
     @staticmethod
     def denoise_image(image: np.ndarray) -> np.ndarray:
         """
