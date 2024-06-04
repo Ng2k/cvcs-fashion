@@ -25,8 +25,9 @@ class SegformerB2Clothes(SegmentationModel):
         """
         Inizializza un nuovo oggetto SegformerB2Clothes.
         """
-        self._processor = SegformerImageProcessor.from_pretrained("mattmdjaga/segformer_b2_clothes")
-        self._model = AutoModelForSemanticSegmentation.from_pretrained("mattmdjaga/segformer_b2_clothes")
+        model_name = "mattmdjaga/segformer_b2_clothes"
+        self._processor = SegformerImageProcessor.from_pretrained(model_name)
+        self._model = AutoModelForSemanticSegmentation.from_pretrained(model_name)
 
     def apply_segmentation(self, image: Image) -> Image:
         inputs = self._processor(images=image, return_tensors="pt")
