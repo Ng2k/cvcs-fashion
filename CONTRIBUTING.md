@@ -51,7 +51,7 @@ $ git pull origin <nome branch>
 
 ### Commit
 
-Un messaggio ben strutturato ed esplicativo rende facile la comprensione delle modifiche effettuate. La convenzione da utilizzare per i commit è la [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+Un messaggio ben strutturato ed esplicativo rende facile la comprensione delle modifiche effettuate.
 
 L'obiettivo è quello di avere la possibilità di implementare successivamente software automatici per la creazione del CHANGELOG.md in base ai commit eseguiti sulla repository remota.
 
@@ -101,6 +101,14 @@ Il tipo viene scelta dalla seguente lista:
 ##### Scope
 
 Lo `scope` dovrebbe essere il nome del componente interessato dalla modifica. I componenti attuali:
+- `main`: entry file del progetto
+- `image_processor`: classe per la manipolazione delle immagini
+- `ssd_model`: classe astratta per modello ssd
+- `nvidia_ssd_model`: classe concreta di modello ssd
+- `single_shot_detector`: classe gestore modello di ssd
+- `segmentation_model`: classe astratta per modello di segmentazione
+- `segformer_b2_clothes`: classe concreta di modello di segmentazione
+- `clothes_segmentation`: classe gestore per modello di segmentazione 
 - `dataset`: componente per la gestione dei dataset
 - `type`: definizione dei tipi di dato per la tipizzazione delle variabili nel codice
 - `devtools`: file di utility per il programmatore
