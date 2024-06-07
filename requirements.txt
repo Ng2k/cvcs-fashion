@@ -1,7 +1,7 @@
 numpy
-scipy 
+scipy
 scikit-image
 matplotlib
-torch
 transformers
 opencv-python
+chardet

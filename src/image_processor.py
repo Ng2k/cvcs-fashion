@@ -99,6 +99,10 @@ class ImageProcessor:
             np.ndarray
                 Immagine filtrata.
         """
+        # Converti l'immagine a uint8 se non lo è
+        if image.dtype != np.uint8:
+            image = (image * 255).astype(np.uint8)
 
-        denoised_image = cv2.bilateralFilter(image, 9, 75, 75)
+        # Applica il filtro bilaterale
+        denoised_image = cv2.bilateralFilter(image, d=9, sigmaColor=75, sigmaSpace=75)
         return denoised_image

@@ -7,6 +7,7 @@ La classe utilizza un modello di segmentation vestiti pre-addestrato.
 """
 
 from PIL import Image
+import torch
 
 from src.segmentation.segmentation_model import SegmentationModel
 
@@ -28,7 +29,7 @@ class ClothesSegmentation():
         """
         self._segmentation_model: SegmentationModel = model
 
-    def apply_segmentation(self, image: Image) -> Image:
+    def apply_segmentation(self, image: Image) -> torch.Tensor:
         """Applica la segmentazione all'immagine.
 
         Args:
@@ -37,6 +38,6 @@ class ClothesSegmentation():
 
         Returns:
         -------
-            Image: immagine segmentata
+            torch.Tensor: immagine segmentata
         """
         return self._segmentation_model.apply_segmentation(image)

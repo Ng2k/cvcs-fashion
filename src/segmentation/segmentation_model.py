@@ -9,6 +9,7 @@ Interfaccia che specifica i metodi che devono essere implementati da qualsiasi m
 """
 from abc import ABC, abstractmethod
 from PIL import Image
+import torch
 
 class SegmentationModel(ABC):
     """
@@ -25,7 +26,7 @@ class SegmentationModel(ABC):
     """
 
     @abstractmethod
-    def apply_segmentation(self, image: Image) -> Image:
+    def apply_segmentation(self, image: Image) -> torch.Tensor:
         """Applica la segmentazione all'immagine.
 
         Args:
@@ -34,5 +35,5 @@ class SegmentationModel(ABC):
 
         Returns:
         -------
-            Image: immagine segmentata
+            torch.Tensor: immagine segmentata
         """

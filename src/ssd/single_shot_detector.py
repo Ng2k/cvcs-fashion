@@ -67,5 +67,5 @@ class SingleShotDetector():
         """
         image_loaded = self._ssd_model.load_image(image_url)
         image_numpy, image_tensor = image_loaded["image_numpy"], image_loaded["image_tensor"]
-        bboxes = self._ssd_model.find_best_bboxes(image_numpy, image_tensor)
+        bboxes = self._ssd_model.find_best_bboxes(image_tensor)
         return self._retrieve_image_cropped(image_numpy, bboxes)

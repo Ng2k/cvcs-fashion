@@ -7,7 +7,7 @@ Fornisce metodi per caricare il modello SegformerB2Clothes e le relative utility
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
 """
-
+import torch
 from torch import nn
 from PIL import Image
 from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
@@ -29,7 +29,7 @@ class SegformerB2Clothes(SegmentationModel):
         self._processor = SegformerImageProcessor.from_pretrained(model_name)
         self._model = AutoModelForSemanticSegmentation.from_pretrained(model_name)
 
-    def apply_segmentation(self, image: Image) -> Image:
+    def apply_segmentation(self, image: Image) -> torch.Tensor:
         inputs = self._processor(images=image, return_tensors="pt")
 
         outputs = self._model(**inputs)
