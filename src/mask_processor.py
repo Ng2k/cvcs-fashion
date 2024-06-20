@@ -36,6 +36,7 @@ class MaskProcessor:
         masks_dict = {}
         for label in np.unique(segmented_image):
             mask = np.where(segmented_image == label, 1, 0)
-            masks_dict[label] = (input_image * mask[:, :, None]).astype(np.uint8)
+            if np.any(mask):
+                masks_dict[label] = (input_image * mask[:, :, None]).astype(np.uint8)
 
         return masks_dict

@@ -1,7 +1,0 @@
-numpy
-scipy
-scikit-image
-matplotlib
-transformers
-opencv-python
-chardet

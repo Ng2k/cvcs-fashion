@@ -4,8 +4,10 @@
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
 """
+
+import json
 from PIL import Image
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import torch
@@ -19,90 +21,30 @@ from src.mask_processor import MaskProcessor
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation
 
+from src.open_fashion_clip.open_clip_model_manager import OpenClipModelManager
+from src.open_fashion_clip.image_processor_clip import ImageProcessorClip
+from src.open_fashion_clip.clip_inference import ClipInference
+from src.open_fashion_clip.text_processor import TextProcessor
+
+from src.utils import Utils
+
 def load_image(image_url: str) -> np.ndarray:
-    """Carica un'immagine da un file e la converte in un array NumPy.
-    
-    Parameters
-    ----------
-        image_url : str
-            Percorso dell'immagine da caricare.
-    Returns
-    -------
-        np.ndarray
-            L'immagine caricata.
-    """
     return cv2.imread(image_url)
 
 def image_resize(image: np.ndarray, max_size: int) -> np.ndarray:
-    """
-    Ridimensiona un'immagine al massimo valore specificato mantenendo l'aspect ratio.
-
-    Parametri
-    ----------
-        image_path : str
-            Percorso dell'immagine da ridimensionare.
-        max_size : int
-            Dimensione massima del lato più lungo dell'immagine ridimensionata.
-
-    Ritorna
-    -------
-        np.ndarray
-            L'immagine ridimensionata.
-    """
     resized_image = ImageProcessor.resize_image(image, max_size)
     return resized_image
 
 def ssd_detection(image_url: str) -> np.ndarray:
-    """
-    Esegue la rilevazione della persona nell'immagine utilizzando il modello SSD.
-
-    Parametri
-    ----------
-        image : np.ndarray
-            Immagine su cui eseguire la rilevazione.
-
-    Ritorna
-    -------
-        np.ndarray
-            L'immagine con la persona individuata.
-    """
     ssd_model = SingleShotDetector(NVidiaSSDModel())
     return ssd_model.detect_person_in_image(image_url)
 
 def segmentation(image : Image) -> torch.Tensor:
-    """
-    Applica la segmentazione dei vestiti all'immagine utilizzando il modello di segmentazione.
-
-    Parametri
-    ----------
-        image : Image
-            Immagine su cui applicare la segmentazione.
-
-    Ritorna
-    -------
-        torch.Tensor
-            L'immagine con la segmentazione dei vestiti.
-    """
     segmentation_model = ClothesSegmentation(SegformerB2Clothes())
     segmented_image = segmentation_model.apply_segmentation(image)
     return segmented_image
 
 def apply_masks(input_image: np.ndarray, segmented_image: np.ndarray) -> dict:
-    """
-    Applica le maschere di segmentazione all'immagine originale.
-
-    Parametri
-    ----------
-        input_image : np.ndarray
-            Immagine originale
-        segmented_image : np.ndarray
-            Immagine segmentata
-
-    Ritorna
-    -------
-        dict
-            Le immagini con le maschere applicate.
-    """
     return MaskProcessor.compute_masks(input_image, segmented_image)
 
 def main():
@@ -117,7 +59,7 @@ def main():
 
     #salvataggio dimensione immagine di input
     input_image =  load_image(img_path + img_ext)
-    # input_shape = input_image.shape[:2]
+    #input_shape = input_image.shape[:2]
 
     # Denoise dell'immagine
     denoise_image = ImageProcessor.denoise_image(input_image)
@@ -141,14 +83,33 @@ def main():
     # Applica la segmentazione dei vestiti
     segmented_image = segmentation(detected_image_pil)
 
-    Image.fromarray(segmented_image.numpy().astype(np.uint8)).save(img_path + "_segmented" + img_ext)
+    Image.fromarray(segmented_image.numpy().astype(np.uint8)).save(img_path+"_segmented"+img_ext)
     segmented_image = segmented_image.numpy().astype(np.uint8)
 
     # Applica le maschere
     masks = apply_masks(detected_image, segmented_image)
 
-    plt.imshow(masks[4])
-    plt.show()
+    with open('./prompts.json', encoding='utf-8') as f:
+        prompts = json.load(f).get('prompts')
+
+    # Open CLIP text decoder
+    device = Utils.get_device()
+    model_manager = OpenClipModelManager(device)
+    image_processor = ImageProcessorClip(model_manager.preprocess, device)
+    text_processor = TextProcessor(model_manager.tokenizer, device)
+    clip_inference = ClipInference(model_manager, image_processor, text_processor)
+
+    # estrazione feature vectors per ogni maschera
+    for _, value in masks.items():
+        inference = clip_inference.run_inference(value, prompts)
+        inference, index = inference.squeeze(0).max(dim=0)
+        img = image_processor.load_and_process_image(value)
+
+        image_features = {
+            prompts[index]: model_manager.encode_image(img)
+        }
+
+        print(image_features)
 
 if __name__ == "__main__":
     main()

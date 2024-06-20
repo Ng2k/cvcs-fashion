@@ -17,12 +17,9 @@ class SegmentationModel(ABC):
 
     Metodi
     -------
-        load_image(self, image_url: str) -> dict
+        apply_segmentation(self, image: Image) -> dict
             Metodo astratto
             Carica l'immagine da un URL
-        find_best_bboxes(self, image_tensor: torch.Tensor) -> list
-            Metodo astratto
-            Trova le migliori bounding box per l'immagine.
     """
 
     @abstractmethod
