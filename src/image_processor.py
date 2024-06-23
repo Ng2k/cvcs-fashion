@@ -23,14 +23,14 @@ class ImageProcessor:
         """
         Ritaglia l'immagine data delle coordinate della bounding box.
 
-        Parametri
-        ----------
+        Args
+        -------
         image : np.ndarray
             L'immagine da ritagliare.
         bbox : tuple
             Tupla di coordinate della bounding box.
 
-        Ritorna
+        Returns
         -------
         np.ndarray
             L'immagine ritagliata.
@@ -67,14 +67,14 @@ class ImageProcessor:
         """
         Ridimensiona l'immagine mantenendo l'aspect ratio.
 
-        Parametri
+        Args
         ----------
             image : np.ndarray
                 L'immagine da ridimensionare.
             size : tupla
                 La dimensione per il resize
 
-        Ritorna
+        Returns
         -------
             np.ndarray
                 L'immagine ridimensionata.
@@ -89,12 +89,12 @@ class ImageProcessor:
         """
         Applica il denoising all'immagine utilizzando il Bilater Filter.
 
-        Parametri
+        Args
         ----------
             image : np.ndarray
                 Immagine input da filtrare dal rumore.
 
-        Ritorna
+        Returns
         -------
             np.ndarray
                 Immagine filtrata.

@@ -4,13 +4,17 @@
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
 """
-
-import json
 from PIL import Image
-//from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import torch
+
+from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
+from src.similarity_calculator.similarity_calculator import SimilarityFunction
+
+from src.features_extractor.open_clip.model import OpenClipModel
+from src.features_extractor.feature_extractor import FeatureExtractor
 
 from src.ssd.nvidia_ssd_model import NVidiaSSDModel
 from src.ssd.single_shot_detector import SingleShotDetector
@@ -21,19 +25,8 @@ from src.mask_processor import MaskProcessor
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation
 
-from src.open_fashion_clip.open_clip_model_manager import OpenClipModelManager
-from src.open_fashion_clip.image_processor_clip import ImageProcessorClip
-from src.open_fashion_clip.clip_inference import ClipInference
-from src.open_fashion_clip.text_processor import TextProcessor
-
-from src.utils import Utils
-
 def load_image(image_url: str) -> np.ndarray:
     return cv2.imread(image_url)
-
-def image_resize(image: np.ndarray, max_size: int) -> np.ndarray:
-    resized_image = ImageProcessor.resize_image(image, max_size)
-    return resized_image
 
 def ssd_detection(image_url: str) -> np.ndarray:
     ssd_model = SingleShotDetector(NVidiaSSDModel())
@@ -41,20 +34,24 @@ def ssd_detection(image_url: str) -> np.ndarray:
 
 def segmentation(image : Image) -> torch.Tensor:
     segmentation_model = ClothesSegmentation(SegformerB2Clothes())
-    segmented_image = segmentation_model.apply_segmentation(image)
-    return segmented_image
+    return segmentation_model.apply_segmentation(image)
 
-def apply_masks(input_image: np.ndarray, segmented_image: np.ndarray) -> dict:
-    return MaskProcessor.compute_masks(input_image, segmented_image)
+def features_extraction(masks: dict) -> torch.Tensor:
+    feature_extractor = FeatureExtractor(OpenClipModel())
+    return feature_extractor.extract_masks_features(masks)
+
+def calculate_similarity(features: list[torch.Tensor]) -> torch.Tensor:
+    similarity_function = SimilarityFunction(CosineSimilarityFunction())
+    return similarity_function.compute_similarity(features)
 
 def main():
     """
     Funzione principale dello script. Esegue i seguenti passaggi:
 
     Nota:   Questa funzione non restituisce nulla.
-            Salva i risultati intermedi e finali su disco e mostra il risultato finale.
+            Salva i risultati intermedi e finali su disco e mostra il risultato
     """
-    img_path = "./static/image_test"
+    img_path = "./static/image_test_3"
     img_ext = ".jpg"
 
     #salvataggio dimensione immagine di input
@@ -65,8 +62,7 @@ def main():
     denoise_image = ImageProcessor.denoise_image(input_image)
 
     # Ridimensiona l'immagine
-    size = (300, 300)
-    resized_image = image_resize(denoise_image, size)
+    resized_image = ImageProcessor.resize_image(denoise_image, (300, 300))
     cv2.imwrite(img_path + "_resized" + img_ext, resized_image)
 
     # Esegue la rilevazione della persona
@@ -82,37 +78,20 @@ def main():
 
     # Applica la segmentazione dei vestiti
     segmented_image = segmentation(detected_image_pil)
-
     Image.fromarray(segmented_image.numpy().astype(np.uint8)).save(img_path+"_segmented"+img_ext)
     segmented_image = segmented_image.numpy().astype(np.uint8)
 
     # Applica le maschere
-    masks = apply_masks(detected_image, segmented_image)
+    masks = MaskProcessor.compute_masks(detected_image, segmented_image)
 
-    with open('./prompts_no_desc.json', encoding='utf-8') as f:
-        prompts = json.load(f).get('prompts')
+    features = features_extraction(masks)
+    similarity_matrix = calculate_similarity(features)
+    mean_similarity = similarity_matrix.mean(dim=0)
+    lowest_similarity, index = mean_similarity.squeeze(0).min(dim=0)
 
-    # Open CLIP text decoder
-    device = Utils.get_device()
-    model_manager = OpenClipModelManager(device)
-    image_processor = ImageProcessorClip(model_manager.preprocess, device)
-    text_processor = TextProcessor(model_manager.tokenizer, device)
-    clip_inference = ClipInference(model_manager, image_processor, text_processor)
-
-    # estrazione feature vectors per ogni maschera
-    image_features = {}
-    #plt.imshow(masks[10])
-    #plt.show()
-
-    for _, value in masks.items():
-        inference = clip_inference.run_inference(value, prompts)
-        inference, index = inference.squeeze(0).max(dim=0)
-        img = image_processor.load_and_process_image(value)
-        image_features[prompts[index]] = model_manager.encode_image(img)
-
-    #print(image_features)
-
-    print(torch.cosine_similarity(image_features[prompts[0]], image_features[prompts[1]], dim=-1))
+    print(mean_similarity)
+    print(lowest_similarity)
+    print(index)
 
 if __name__ == "__main__":
     main()

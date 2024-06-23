@@ -60,7 +60,7 @@ class SingleShotDetector():
             image_url: str
                 url dell'immagine
 
-        Return:
+        Returns:
         -------
             np.ndarray:
                 immagine con la persona individuata

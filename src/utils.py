@@ -14,7 +14,7 @@ class Utils():
         Restituisce il device su cui eseguire il modello.
 
         Returns:
-        ----------
+        -------
             str
                 Il device su cui eseguire il modello.
         """

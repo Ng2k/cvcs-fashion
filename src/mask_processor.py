@@ -16,14 +16,14 @@ class MaskProcessor:
         """
         Computa le maschere per isolare i capi di abbigliamento dalla segmentazione.
 
-        Parametri
-        ----------
+        Args
+        -------
             input_image : np.ndarray
                 Immagine originale
             segmented_image : np.ndarray
                 Immagine segmentata
 
-        Ritorna
+        Returns
         -------
             ```python
             {
