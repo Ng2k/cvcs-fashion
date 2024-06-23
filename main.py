@@ -7,7 +7,7 @@
 
 import json
 from PIL import Image
-#from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import torch
@@ -54,7 +54,7 @@ def main():
     Nota:   Questa funzione non restituisce nulla.
             Salva i risultati intermedi e finali su disco e mostra il risultato finale.
     """
-    img_path = "./static/image_test_2"
+    img_path = "./static/image_test"
     img_ext = ".jpg"
 
     #salvataggio dimensione immagine di input
@@ -89,7 +89,7 @@ def main():
     # Applica le maschere
     masks = apply_masks(detected_image, segmented_image)
 
-    with open('./prompts.json', encoding='utf-8') as f:
+    with open('./prompts_no_desc.json', encoding='utf-8') as f:
         prompts = json.load(f).get('prompts')
 
     # Open CLIP text decoder
@@ -100,16 +100,17 @@ def main():
     clip_inference = ClipInference(model_manager, image_processor, text_processor)
 
     # estrazione feature vectors per ogni maschera
+    image_features = {}
+    #plt.imshow(masks[10])
+    #plt.show()
+
     for _, value in masks.items():
         inference = clip_inference.run_inference(value, prompts)
         inference, index = inference.squeeze(0).max(dim=0)
         img = image_processor.load_and_process_image(value)
+        image_features[prompts[index]] = model_manager.encode_image(img)
 
-        image_features = {
-            prompts[index]: model_manager.encode_image(img)
-        }
-
-        print(image_features)
+    #print(image_features)
 
 if __name__ == "__main__":
     main()

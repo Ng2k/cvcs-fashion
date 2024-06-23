@@ -34,9 +34,18 @@ class MaskProcessor:
                 Le maschere per i capi di abbigliamento.
         """
         masks_dict = {}
+        black_list = [0, 2, 11, 12, 13, 14, 15]
+        right_shoe_index = 10
+        left_shoe_index = 9
+        last_mask = None
         for label in np.unique(segmented_image):
-            mask = np.where(segmented_image == label, 1, 0)
-            if np.any(mask):
-                masks_dict[label] = (input_image * mask[:, :, None]).astype(np.uint8)
+            if label not in black_list:
+                mask = np.where(segmented_image == label, 1, 0)
+                if label == right_shoe_index:
+                    mask += last_mask
+                if np.any(mask) and label != left_shoe_index:
+                    masks_dict[label] = (input_image * mask[:, :, None]).astype(np.uint8)
+
+                last_mask = mask                    
 
         return masks_dict
