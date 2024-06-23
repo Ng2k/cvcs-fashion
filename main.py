@@ -7,7 +7,7 @@
 
 import json
 from PIL import Image
-from matplotlib import pyplot as plt
+//from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import torch
@@ -111,6 +111,8 @@ def main():
         image_features[prompts[index]] = model_manager.encode_image(img)
 
     #print(image_features)
+
+    print(torch.cosine_similarity(image_features[prompts[0]], image_features[prompts[1]], dim=-1))
 
 if __name__ == "__main__":
     main()
