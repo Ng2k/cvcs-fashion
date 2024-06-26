@@ -4,8 +4,9 @@
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
 """
+import json
 from PIL import Image
-#from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import torch
@@ -51,7 +52,7 @@ def main():
     Nota:   Questa funzione non restituisce nulla.
             Salva i risultati intermedi e finali su disco e mostra il risultato
     """
-    img_path = "./static/image_test_3"
+    img_path = "./static/image_test"
     img_ext = ".jpg"
 
     #salvataggio dimensione immagine di input
@@ -86,12 +87,36 @@ def main():
 
     features = features_extraction(masks)
     similarity_matrix = calculate_similarity(features)
+    #print(similarity_matrix)
     mean_similarity = similarity_matrix.mean(dim=0)
-    lowest_similarity, index = mean_similarity.squeeze(0).min(dim=0)
+    lowest_similarity, index_lowest_similarity = mean_similarity.squeeze(0).min(dim=0)
 
-    print(mean_similarity)
+    # inferenza
+    feature_extractor = FeatureExtractor(OpenClipModel())
+    with open("./prompts_no_desc.json", "r") as prompts_file:
+        prompts = json.load(prompts_file).get('prompts')
+
+    """for mask in masks.values():
+        _, ax = plt.subplots(1, 1, figsize=(10, 10))
+        ax.imshow(mask)
+
+    plt.show() """
+
+    index_specific_label: int = -1
+    for mask in masks.values():
+        img_tensor = feature_extractor.model.load_and_process_image(mask)
+        inferences = feature_extractor.model.run_inference(img_tensor, prompts)
+        _, index_label = inferences.squeeze(0).max(dim=0)
+        index_specific_label = index_label
+
+    if index_specific_label == -1:
+        print("errore")
+        exit(-1)
+
+    print(index_specific_label)
+    """ print(mean_similarity)
     print(lowest_similarity)
-    print(index)
+    print(index) """
 
 if __name__ == "__main__":
     main()

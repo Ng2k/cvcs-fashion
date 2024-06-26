@@ -46,6 +46,6 @@ class MaskProcessor:
                 if np.any(mask) and label != left_shoe_index:
                     masks_dict[label] = (input_image * mask[:, :, None]).astype(np.uint8)
 
-                last_mask = mask                    
+                last_mask = mask
 
         return masks_dict
