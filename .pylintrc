@@ -1,2 +1,2 @@
 [MASTER]
-ignore=main.py
+ignore=main.py, feature_extraction_polyvore.py
