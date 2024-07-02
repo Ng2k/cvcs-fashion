@@ -6,13 +6,14 @@
 import json
 import time
 
+from matplotlib import pyplot as plt
 import torch
 from torch.utils.data import DataLoader
-from torchvision import transforms
 import open_clip
 
+from src.features_extractor.feature_extractor import FeatureExtractor
+from src.features_extractor.open_clip.model import OpenClipModel
 from polyvore_dataset import PolyvoreDataset
-from to_tensor_trasformer import ToTensor
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 weight = "./src/features_extractor/open_clip/finetuned_clip.pt"
@@ -26,65 +27,73 @@ def load_model():
 
     return clip_model, preprocess, tokenizer
 
-def features_extraction(batch_images: torch.Tensor) -> torch.Tensor:
-    """
-    Estrae le caratteristiche per un batch di immagini utilizzando il modello CLIP.
-    
-    Args:
-    --------
-        batch_images (torch.Tensor): Un batch di immagini preprocessate.
-    
-    Returns:
-    --------
-        torch.Tensor: Un tensore contenente le caratteristiche estratte per ogni immagine.
-    """
-    clip_model, _, tokenizer = load_model()
-    clip_model.to(device)
-    batch_images = batch_images.to(device)
+def get_prompts(path: str) -> list[str]:
+    with open(path, "r") as prompts_file:
+        prompts: list = json.load(prompts_file).get('prompts')
 
-    with open("./prompts_no_desc.json", "r") as prompts_file:
-        prompts = json.load(prompts_file).get('prompts')
+    return prompts
 
-    tokenized_prompt = tokenizer(prompts).to(device)
-    
-    with torch.no_grad():
-        image_features = clip_model.encode_image(batch_images)
-        text_features = clip_model.encode_text(tokenized_prompt)
+def get_out_images(path: str) -> list:
+    try:
+        with open(path, "r") as out_file:
+            out_images: list = json.load(out_file).get('images')
+    except Exception as _:
+        out_images = []
 
-        image_features /= image_features.norm(dim=-1, keepdim=True)
-        text_features /= text_features.norm(dim=-1, keepdim=True)
+    return out_images
 
-        # Calcola la similarità e applica softmax per ottenere le probabilità
-        similarities = (100.0 * image_features @ text_features.T).softmax(dim=-1)
-        _, labels = similarities.max(dim=1)
-
-    return labels, image_features
+def write_out_images(path: str, out_images: list) -> None:
+    with open(path, "w") as json_file:
+        json.dump({ "images": out_images }, json_file, indent=4)
 
 def main():
     start_time = time.time()
 
-    images_dir = "dataset/polyvore"
-    batch_size = 32
-    transform = transforms.Compose([
-        transforms.Resize((256, 256)),
-        ToTensor()
-    ])
-    dataset = PolyvoreDataset(images_dir, transform = transform)
-    dataloader = DataLoader(
-        dataset,
-        batch_size = batch_size,
-        shuffle = False,
-        num_workers = 4
-    )
+    images_dir = "dataset/polyvore_64"
+    data_loader_options = {
+        "batch_size": 16,
+        "shuffle": False,
+        "num_workers": 4
+    }
+    dataset = PolyvoreDataset(images_dir, transform = None)
+    dataloader = DataLoader(dataset, **data_loader_options)
 
-    counter = 0
+    prompts_path = "./prompts_no_desc.json"
+    out_images_path = "./feature_vectors_polyvore.json"
+    prompts = get_prompts(prompts_path)
+    out_images = get_out_images(out_images_path)
+    feature_extractor = FeatureExtractor(OpenClipModel())
+
     for i, batch in enumerate(dataloader):
-        _, feature_vectors = features_extraction(batch)
         print(f"Batch {i+1}/{len(dataloader)} elaborato.")
+        batch_size = len(batch["img_path"])
+
+        for j in range(batch_size):
+            print(f"Elemento {j+1}/{batch_size} del Batch {i+1}")
+            img_array: torch.Tensor = batch["img_array"][j].cpu().numpy()
+            img_path: str = batch["img_path"][j]
+
+            img_tensor = feature_extractor.model.load_and_process_image(img_array)
+            inferences = feature_extractor.model.run_inference(
+                img_tensor,
+                prompts
+            )
+            _, index_label = inferences.squeeze(0).max(dim=0)
+            out_images.append({
+                "path": img_path,
+                "features": img_tensor.tolist(),
+                "label_clip_index": index_label.item(),
+                "label_clip": prompts[index_label],
+                "label_general_index": -1,
+                "label_general": ""
+            })
+
+        print("---------------------")
+
+    write_out_images(path=out_images_path, out_images=out_images)
 
     end_time = time.time()
     print(f"Tempo di esecuzione: {end_time - start_time} secondi")
-
 
 if __name__ == "__main__":
     main()

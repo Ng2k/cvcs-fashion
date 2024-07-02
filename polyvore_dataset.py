@@ -5,12 +5,13 @@
 """
 from os import path, listdir
 from PIL import Image
+import numpy as np
 from torch.utils.data import Dataset
 
 class PolyvoreDataset(Dataset):
     """Dataset per immagini Polyvore."""
 
-    def __init__(self, images_dir, transform=None):
+    def __init__(self, images_dir: str, transform = None):
         """
         Args:
         -------
@@ -26,8 +27,10 @@ class PolyvoreDataset(Dataset):
         return len(self.filenames)
 
     def __getitem__(self, idx):
-        img_name = path.join(self.images_dir, self.filenames[idx])
-        image = Image.open(img_name)
-        if self.transform:
-            image = self.transform(image)
-        return image
+        img_path = path.join(self.images_dir, self.filenames[idx])
+        image = Image.open(img_path)
+
+        return {
+            'img_array': np.array(image),
+            'img_path': img_path
+        }

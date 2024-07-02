@@ -96,14 +96,9 @@ def main():
     with open("./prompts_no_desc.json", "r") as prompts_file:
         prompts = json.load(prompts_file).get('prompts')
 
-    """for mask in masks.values():
-        _, ax = plt.subplots(1, 1, figsize=(10, 10))
-        ax.imshow(mask)
-
-    plt.show() """
-
     index_specific_label: int = -1
     for mask in masks.values():
+        print(mask.shape)
         img_tensor = feature_extractor.model.load_and_process_image(mask)
         inferences = feature_extractor.model.run_inference(img_tensor, prompts)
         _, index_label = inferences.squeeze(0).max(dim=0)

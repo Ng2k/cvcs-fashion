@@ -162,3 +162,5 @@ cython_debug/
 *.jpg
 
 *.pt
+
+feature_vectors_polyvore.json
