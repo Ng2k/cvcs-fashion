@@ -33,25 +33,17 @@ def get_prompts(path: str) -> list[str]:
 
     return prompts
 
-def get_out_images(path: str) -> list:
-    try:
-        with open(path, "r") as out_file:
-            out_images: list = json.load(out_file).get('images')
-    except Exception as _:
-        out_images = []
-
-    return out_images
-
-def write_out_images(path: str, out_images: list) -> None:
-    with open(path, "w") as json_file:
-        json.dump({ "images": out_images }, json_file, indent=4)
+def write_out_images(out_images: dict) -> None:
+    for key in list(out_images.keys()):
+        with open(f"./polyvore_feature_vectors/{key}.json", "w") as json_file:
+            json.dump({ "images": out_images[key] }, json_file, indent=4)
 
 def main():
     start_time = time.time()
 
-    images_dir = "dataset/polyvore_64"
+    images_dir = "dataset_16/"
     data_loader_options = {
-        "batch_size": 16,
+        "batch_size": 4,
         "shuffle": False,
         "num_workers": 4
     }
@@ -59,10 +51,9 @@ def main():
     dataloader = DataLoader(dataset, **data_loader_options)
 
     prompts_path = "./prompts_no_desc.json"
-    out_images_path = "./feature_vectors_polyvore.json"
     prompts = get_prompts(prompts_path)
-    out_images = get_out_images(out_images_path)
     feature_extractor = FeatureExtractor(OpenClipModel())
+    out_images_json = {}
 
     for i, batch in enumerate(dataloader):
         print(f"Batch {i+1}/{len(dataloader)} elaborato.")
@@ -79,18 +70,23 @@ def main():
                 prompts
             )
             _, index_label = inferences.squeeze(0).max(dim=0)
-            out_images.append({
+
+            index_label_value = index_label.item()
+            if index_label_value not in out_images_json:
+                out_images_json[index_label_value] = []
+
+            out_images_json[index_label.item()].append({
                 "path": img_path,
                 "features": img_tensor.tolist(),
-                "label_clip_index": index_label.item(),
-                "label_clip": prompts[index_label],
+                "label_clip_index": index_label_value,
+                "label_clip": prompts[index_label_value],
                 "label_general_index": -1,
                 "label_general": ""
             })
 
         print("---------------------")
 
-    write_out_images(path=out_images_path, out_images=out_images)
+    write_out_images(out_images_json)
 
     end_time = time.time()
     print(f"Tempo di esecuzione: {end_time - start_time} secondi")
