@@ -3,7 +3,6 @@
 @author Davide Lupo
 @author Francesco Mancinelli
 """
-import numpy as np
 import torch
 
 from src.similarity_calculator.interface_similarity_function import ISimilarityFunction
@@ -14,7 +13,7 @@ class SimilarityFunction(ISimilarityFunction):
     def __init__(self, function: ISimilarityFunction):
         self.function = function
 
-    def compute_similarity(self, features: list[np.ndarray]) -> torch.Tensor:
+    def compute_similarity(self, features) -> torch.Tensor:
         """Calcolo della similaritò tra vettori di features
 
         Args:

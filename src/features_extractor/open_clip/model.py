@@ -76,7 +76,7 @@ class OpenClipModel(IFeatureExtractorModel):
         text_features /= text_features.norm(dim=-1, keepdim=True)
         return (100.0 * image_features @ text_features.T).softmax(dim=-1)
 
-    def run_inference(self, image: torch.Tensor, prompts: list[str]) -> torch.Tensor:
+    def run_inference(self, image: torch.Tensor, prompts) -> torch.Tensor:
         text_tensor = self._tokenize_prompts(prompts)
 
         image_features = self.encode_image(image)

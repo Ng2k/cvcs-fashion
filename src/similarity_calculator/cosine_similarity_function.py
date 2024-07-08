@@ -4,7 +4,6 @@
 @author Francesco Mancinelli
 """
 
-import numpy as np
 import torch
 
 from src.similarity_calculator.interface_similarity_function import ISimilarityFunction
@@ -12,7 +11,7 @@ from src.similarity_calculator.interface_similarity_function import ISimilarityF
 class CosineSimilarityFunction(ISimilarityFunction):
     """Implementazione del calcolo della similarità coseno tra vettori di features
     """
-    def compute_similarity(self, features: list[np.ndarray]) -> torch.Tensor:
+    def compute_similarity(self, features) -> torch.Tensor:
         features_tensor = torch.cat(features, dim = 0)
         return torch.cosine_similarity(
             features_tensor.unsqueeze(1),

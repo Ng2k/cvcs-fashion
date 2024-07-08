@@ -5,14 +5,13 @@
 """
 
 from abc import ABC, abstractmethod
-import numpy as np
 import torch
 
 class ISimilarityFunction(ABC):
     """Interfaccia per il calcolo della similarità tra vettori di features
     """
     @abstractmethod
-    def compute_similarity(self, features: list[np.ndarray]) -> torch.Tensor:
+    def compute_similarity(self, features) -> torch.Tensor:
         """Calcola il valore di similarità tra due vettori di features
 
         Args:

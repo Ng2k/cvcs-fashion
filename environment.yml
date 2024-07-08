@@ -14,9 +14,9 @@ dependencies:
   - scikit-image
   - transformers
   - chardet
-  - pillow
   - matplotlib
   - opencv
   - pip:
     - opencv-python
     - open-clip-torch==2.20.0
+    - pillow

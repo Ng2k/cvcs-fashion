@@ -3,8 +3,6 @@
 @author Davide Lupo
 @author Francesco Mancinelli
 """
-import torch
-
 from src.features_extractor.interface_feature_extractor_model import IFeatureExtractorModel
 
 class FeatureExtractor:
@@ -13,7 +11,7 @@ class FeatureExtractor:
     def __init__(self, model: IFeatureExtractorModel):
         self.model = model
 
-    def extract_masks_features(self, masks: dict) -> list[torch.Tensor]:
+    def extract_masks_features(self, masks: dict) -> list:
         """Estrae vettori delle feature dalle maschere delle immagini
 
         Args:

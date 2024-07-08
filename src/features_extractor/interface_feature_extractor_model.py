@@ -85,7 +85,7 @@ class IFeatureExtractorModel(ABC):
         """
 
     @abstractmethod
-    def run_inference(self, image: torch.Tensor, prompts: list[str]) -> torch.Tensor:
+    def run_inference(self, image: torch.Tensor, prompts) -> torch.Tensor:
         """Esegue l'inferenza
 
         Args:

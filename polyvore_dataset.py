@@ -29,8 +29,9 @@ class PolyvoreDataset(Dataset):
     def __getitem__(self, idx):
         img_path = path.join(self.images_dir, self.filenames[idx])
         image = Image.open(img_path)
+        image.resize((300, 300))
 
         return {
-            'img_array': np.array(image),
+            'img_array': np.array(image.resize((300, 300))),
             'img_path': img_path
         }

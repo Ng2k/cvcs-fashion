@@ -6,7 +6,6 @@
 import json
 import time
 
-from matplotlib import pyplot as plt
 import torch
 from torch.utils.data import DataLoader
 import open_clip
@@ -27,7 +26,7 @@ def load_model():
 
     return clip_model, preprocess, tokenizer
 
-def get_prompts(path: str) -> list[str]:
+def get_prompts(path: str) -> 'list[str]':
     with open(path, "r") as prompts_file:
         prompts: list = json.load(prompts_file).get('prompts')
 
@@ -35,15 +34,15 @@ def get_prompts(path: str) -> list[str]:
 
 def write_out_images(out_images: dict) -> None:
     for key in list(out_images.keys()):
-        with open(f"./polyvore_feature_vectors/{key}.json", "w") as json_file:
+        with open(f"./dataset/polyvore_feature_vectors/{key}.json", "w") as json_file:
             json.dump({ "images": out_images[key] }, json_file, indent=4)
 
 def main():
     start_time = time.time()
 
-    images_dir = "dataset_16/"
+    images_dir = "dataset/polyvore_64/"
     data_loader_options = {
-        "batch_size": 4,
+        "batch_size": 16,
         "shuffle": False,
         "num_workers": 4
     }
@@ -65,6 +64,7 @@ def main():
             img_path: str = batch["img_path"][j]
 
             img_tensor = feature_extractor.model.load_and_process_image(img_array)
+            feature_vector = feature_extractor.model.encode_image(img_tensor).unsqueeze(0)
             inferences = feature_extractor.model.run_inference(
                 img_tensor,
                 prompts
@@ -77,7 +77,7 @@ def main():
 
             out_images_json[index_label.item()].append({
                 "path": img_path,
-                "features": img_tensor.tolist(),
+                "features": feature_vector.tolist(),
                 "label_clip_index": index_label_value,
                 "label_clip": prompts[index_label_value],
                 "label_general_index": -1,
