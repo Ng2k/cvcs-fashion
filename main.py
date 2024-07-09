@@ -78,8 +78,8 @@ def main():
     Nota:   Questa funzione non restituisce nulla.
             Salva i risultati intermedi e finali su disco e mostra il risultato
     """
-    img_path = "./static/image_test"
-    img_ext = ".jpg"
+    img_path = "./static/image"
+    img_ext = ".jpeg"
 
     #salvataggio dimensione immagine di input
     input_image =  load_image(img_path + img_ext)
