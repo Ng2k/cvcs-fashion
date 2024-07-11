@@ -28,13 +28,13 @@ class IMaskReplacer(ABC):
         label_mapper: ILabelMapper
     ) -> None:
         if isinstance(mask_list, DictMaskType):
-            self._mask_list = mask_list.values()
+            self._mask_list: IMaskType = mask_list.values()
         elif isinstance(mask_list, ListMaskType):
-            self._mask_list = [mask["mask"] for mask in mask_list]
+            self._mask_list: IMaskType = [mask["mask"] for mask in mask_list]
         else:
-            self._mask_list = []
+            self._mask_list: IMaskType = []
 
-        self._feature_extractor = feature_extractor
+        self._feature_extractor: FeatureExtractor = feature_extractor
         self._feature_mask_list = [
             self._feature_extractor.decode(mask) for mask in self._mask_list
         ]

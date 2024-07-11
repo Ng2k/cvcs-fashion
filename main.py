@@ -12,16 +12,14 @@ import cv2
 import torch
 import os
 
+from src.mask_replacer.classes.mask_replacer_base import MaskReplacerBase
+from src.similarity_calculator.similarity_controller import SimilarityController
 from src.ssd.nvidia_ssd_model import NVidiaSSDModel
 from src.ssd.single_shot_detector import SingleShotDetector
 
 from src.mask_generator.classes.list_mask_generator import ListMaskGenerator
 from src.mask_generator.classes.mask_generator_controller import MaskGeneratorController
-from src.mask_generator.types.list_mask_type import ListMaskType
 from src.mask_generator.types.mask_type import IMaskType
-
-from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
-from src.similarity_calculator.similarity_calculator import SimilarityFunction
 
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation
@@ -58,34 +56,6 @@ def delete_images(img_path: str, img_ext: str) -> None:
         else:
             print(f"The file {file_path} does not exist")
 
-def mapping_label_to_mask(masks: IMaskType) -> list:
-    label_mapper = LabelMapperList(OpenClip())
-
-    with open("./prompts_no_desc.json", "r") as prompts_file:
-        prompts = json.load(prompts_file).get('prompts')
-
-    return label_mapper.map_labels_to_masks(masks, prompts)
-
-#Versione con masks come dizionario
-#def features_extraction(masks: DictMaskType) -> list:
-#    feature_extractor = FeatureExtractor(OpenClip())
-#    return [feature_extractor.extract_features(mask) for mask in masks.values()]
-
-def features_extraction(masks: ListMaskType) -> list:
-    feature_extractor = FeatureExtractor(OpenClip())
-    return [feature_extractor.decode(m["mask"]) for m in masks]
-
-def calculate_similarity(features) -> torch.Tensor:
-    similarity_function = SimilarityFunction(CosineSimilarityFunction())
-    return similarity_function.compute_similarity(features)
-
-def find_index_mask_to_replace(masks: dict) -> int:
-    features = features_extraction(masks)
-    similarity_matrix = calculate_similarity(features)
-    mean_similarity = similarity_matrix.mean(dim=0)
-    _, index_lowest_similarity = mean_similarity.squeeze(0).min(dim=0)
-    return index_lowest_similarity
-
 def main():
     """
     Funzione principale dello script. Esegue i seguenti passaggi:
@@ -120,41 +90,22 @@ def main():
     delete_images(img_path, img_ext)
 
     # Applica le maschere
+
     # mask_generator = MaskGeneratorController(DictMaskGenerator())
     # masks = mask_generator.generate_masks(detected_image, segmented_image)
-    # feature_extractor = FeatureExtractor(OpenClip())
-    # masks_features = [feature_extractor.extract_features(mask) for mask in masks.values()]
     
     mask_generator = MaskGeneratorController(ListMaskGenerator())
     masks = mask_generator.generate_masks(detected_image, segmented_image)
-    feature_extractor = FeatureExtractor(OpenClip())
-    masks_features = [feature_extractor.extract_features(m["mask"]) for m in masks]
 
-    # inferenza maschere con classi open clip
-    map_label_mask_list = mapping_label_to_mask(masks)
+    mask_replacer = MaskReplacerBase(
+        masks,
+        FeatureExtractor(OpenClip()),
+        SimilarityController(),
+        LabelMapperList(OpenClip())
+    )
 
-    # selezione maschera da rimpiazzare
-    idx_mask_to_replace = find_index_mask_to_replace(masks)
-    label_mask_to_replace = map_label_mask_list[idx_mask_to_replace.item()]["idx_label"]
-    features_to_keep = [mask for i, mask in enumerate(masks_features) if i != idx_mask_to_replace]
-
-    try:
-        with open(f"./dataset/polyvore_feature_vectors/{label_mask_to_replace}.json", "r") as img_files:
-            images = json.load(img_files).get('images')
-    except FileNotFoundError:
-        images = []
-
-    mean_similarity_list = []
-    for img in images:
-        img_features = torch.tensor(img["features"]).to(Utils.get_device())
-        similarity_matrix = calculate_similarity(features_to_keep + [img_features])
-        mean_similarity = similarity_matrix.mean(dim=0)
-        mean_similarity_list.append(mean_similarity[-1])
-
-    mean_similarity_tensor = torch.tensor(mean_similarity_list)
-    _, idx_best_similarity = mean_similarity_tensor.max(dim=0)
-
-    plt.imshow(cv2.imread(images[idx_best_similarity]["path"]))
+    polyvore_image = mask_replacer.replace_mask(Utils.get_prompt_list())
+    plt.imshow(polyvore_image)
     plt.show()
 
 if __name__ == "__main__":

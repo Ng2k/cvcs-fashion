@@ -4,8 +4,8 @@
 @Author: Francesco Mancinelli
 """
 
-import json
 from typing import List, Tuple
+import cv2
 import numpy as np
 import torch
 
@@ -18,8 +18,7 @@ class MaskReplacerBase(IMaskReplacer):
 
     def _find_mask_to_replace(self) -> Tuple[np.ndarray, int]:
         mask_list = self._mask_list
-        feature_extractor = self._feature_extractor
-        features = [feature_extractor.decode(mask) for mask in mask_list]
+        features = self._feature_mask_list
 
         similarity_matrix = self._similarity_controller.compute_similarity(features)
         mean_similarity = similarity_matrix.mean(dim=0)
@@ -34,17 +33,19 @@ class MaskReplacerBase(IMaskReplacer):
         _, idx_mask = self._find_mask_to_replace()
         return map_mask_to_label[idx_mask]["idx_label"]
 
-    def replace_mask(self, prompt_list: List[str]) -> List[dict]:
-        features = self._feature_mask_list
-
+    def replace_mask(self, prompt_list: List[str]) -> np.ndarray:
         _, idx_mask = self._find_mask_to_replace()
-        features_to_keep = [feature for i, feature in enumerate(features) if i != idx_mask]
+        features_to_keep = [f for i, f in enumerate(self._feature_mask_list) if i != idx_mask]
 
-        mean_similarity_list = []
-        label_mask = self._find_label_mask_to_replace(prompt_list)
-        polyvore_image_features = Utils.get_polyvore_image_feature(label_mask)
-        for img in polyvore_image_features:
-            img_features = torch.tensor(img["features"]).to(Utils.get_device())
-            similarity_matrix = calculate_similarity(features_to_keep + [img_features])
-            mean_similarity = similarity_matrix.mean(dim=0)
-            mean_similarity_list.append(mean_similarity[-1])
+        label = self._find_label_mask_to_replace(prompt_list)
+        polyvore_images = Utils.get_polyvore_image_feature(label)
+        mean_similarity_list = [
+            self._similarity_controller.compute_similarity(
+                features_to_keep + [torch.tensor(img["features"]).to(Utils.get_device())]
+            )
+            .mean(dim=0)[-1]
+            for img in polyvore_images
+        ]
+
+        _, idx_best_similarity = torch.tensor(mean_similarity_list).max(dim=0)
+        return cv2.imread(polyvore_images[idx_best_similarity]["path"])
