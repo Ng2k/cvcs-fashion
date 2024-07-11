@@ -1,8 +1,4 @@
 """
-Implementazione dell'interfaccia SSDModel per il modello SSD di NVIDIA.
-
-Fornisce metodi per caricare il modello SSD di NVIDIA e le relative utility di elaborazione.
-
 @Author Nicola Guerra
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
@@ -10,14 +6,12 @@ Fornisce metodi per caricare il modello SSD di NVIDIA e le relative utility di e
 
 import torch
 
-from src.ssd.ssd_model import SSDModel
+from src.single_shot_detector.interfaces.interface_single_shot_detector import ISingleShotDetector
 
-class NVidiaSSDModel(SSDModel):
+class NvidiaSingleShotDetector(ISingleShotDetector):
     """
-    Classe concreta per il modelli SSD di nvidia.
+    Classe concreta per il modello SingleShotDetector di nvidia.
     """
-
-    _CONFIDENCE: float = 0.40
 
     def __init__(self):
         """

@@ -18,8 +18,8 @@ from src.outfit_component_selector.classes.outfit_component_selector_base import
 from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
 from src.similarity_calculator.similarity_controller import SimilarityController
 
-from src.ssd.nvidia_ssd_model import NVidiaSSDModel
-from src.ssd.single_shot_detector import SingleShotDetector
+from single_shot_detector.classes.nvidia_single_shot_detector import NVidiaSSDModel
+from src.single_shot_detector.single_shot_detector import SingleShotDetector
 
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation

@@ -10,20 +10,11 @@ Fornisce metodi per caricare un'immagine, elaborarla e disegnare dei bounding bo
 import numpy as np
 
 from src.image_processor import ImageProcessor
-from src.ssd.ssd_model import SSDModel
+from single_shot_detector.interfaces.interface_single_shot_detector import SSDModel
 
 class SingleShotDetector():
     """
     Classe usata per rappresentare un Single Shot Detector (SSD) model.
-
-    Attributi
-    ----------
-        _CONFIDENCE : float
-            Attributo privato
-            Threshold di confidenza per la detection degli oggetti.
-            Gli oggetti con un punteggio di confidenza inferiore a questa soglia vengono ignorati.
-        _ssd_model : SSDModel
-            Modello SSD.
     """
 
     _CONFIDENCE: float = 0.40
@@ -39,17 +30,13 @@ class SingleShotDetector():
 
         Args:
         -------
-            image_numpy: np.ndarray
-                immagine caricata come array numpy
-            bboxes: list
-                bounding box
+            image_numpy (np.ndarray): immagine caricata come array numpy
+            bboxes (list): bounding box
 
         Returns:
         -------
-            np.ndarray:
-                immagine ritagliata
+            np.ndarray: immagine ritagliata
         """
-
         return ImageProcessor.crop_image_from_bbox(image_numpy, bboxes)
 
     def detect_person_in_image(self, image_url: str) -> np.ndarray:
@@ -57,13 +44,11 @@ class SingleShotDetector():
 
         Args:
         -------
-            image_url: str
-                url dell'immagine
+            image_url (str): url dell'immagine
 
         Returns:
         -------
-            np.ndarray:
-                immagine con la persona individuata
+            np.ndarray: immagine con la persona individuata
         """
         image_loaded = self._ssd_model.load_image(image_url)
         image_numpy, image_tensor = image_loaded["image_numpy"], image_loaded["image_tensor"]
