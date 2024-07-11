@@ -4,8 +4,11 @@
 @author Francesco Mancinelli
 """
 from dataclasses import dataclass
+import torch
 
 @dataclass
-class IMaskType:
-    """Interfaccia per la definizione del tipo di dato per le maschere
+class MaskType():
+    """Classe per definizione tipo di dato per le maschere
     """
+    general_label: int
+    mask: torch.Tensor

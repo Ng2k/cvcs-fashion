@@ -8,11 +8,9 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 import numpy as np
 
+from src.label_mapper.classes.label_mapper import LabelMapper
+from src.mask_generator.types.mask_type import MaskType
 from src.feature_extractor.feature_extractor import FeatureExtractor
-from src.label_mapper.interfaces.label_mapper import ILabelMapper
-from src.mask_generator.types.dict_mask_type import DictMaskType
-from src.mask_generator.types.list_mask_type import ListMaskType
-from src.mask_generator.types.mask_type import IMaskType
 from src.similarity_calculator.similarity_controller import SimilarityController
 
 class IMaskReplacer(ABC):
@@ -22,22 +20,18 @@ class IMaskReplacer(ABC):
 
     def __init__(
         self,
-        mask_list: IMaskType,
+        mask_list: List[MaskType],
         feature_extractor: FeatureExtractor,
         similarity_controller: SimilarityController,
-        label_mapper: ILabelMapper
+        label_mapper: LabelMapper
     ) -> None:
-        if isinstance(mask_list, DictMaskType):
-            self._mask_list: IMaskType = mask_list.values()
-        elif isinstance(mask_list, ListMaskType):
-            self._mask_list: IMaskType = [mask["mask"] for mask in mask_list]
-        else:
-            self._mask_list: IMaskType = []
+        self._mask_list = mask_list
 
         self._feature_extractor: FeatureExtractor = feature_extractor
         self._feature_mask_list = [
-            self._feature_extractor.decode(mask) for mask in self._mask_list
+            self._feature_extractor.decode(m["mask"]) for m in self._mask_list
         ]
+
         self._similarity_controller = similarity_controller
         self._label_mapper = label_mapper
 

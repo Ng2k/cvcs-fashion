@@ -19,7 +19,7 @@ class OpenClip(IClipModel):
     """
     _MODEL_NAME = "ViT-B/32"
     _TOKENAZER_NAME = "ViT-B-32"
-    _WEIGHTS_PATH = path.join(path.dirname(__file__), "finetuned_clip.pt")
+    _WEIGHTS_PATH = path.join(path.dirname(__file__), "../finetuned_clip.pt")
 
     def __init__(self):
         self.device = Utils.get_device()

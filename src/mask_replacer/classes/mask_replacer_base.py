@@ -36,7 +36,6 @@ class MaskReplacerBase(IMaskReplacer):
     def replace_mask(self, prompt_list: List[str]) -> np.ndarray:
         _, idx_mask = self._find_mask_to_replace()
         features_to_keep = [f for i, f in enumerate(self._feature_mask_list) if i != idx_mask]
-
         label = self._find_label_mask_to_replace(prompt_list)
         polyvore_images = Utils.get_polyvore_image_feature(label)
         mean_similarity_list = [

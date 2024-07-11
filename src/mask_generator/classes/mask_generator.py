@@ -3,17 +3,17 @@
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
 """
+from typing import List
 import numpy as np
 
-from src.mask_generator.interfaces.interface_mask_generator import IMaskGenerator
-from src.mask_generator.types.mask_type import IMaskType
+from src.mask_generator.types.mask_type import MaskType
 from src.mask_generator.utility import MaskUtility
 
-class BaseMaskGenerator(IMaskGenerator):
+class MaskGenerator():
     """Classe per la generazione delle maschere
     """
     def __init__(self):
-        self.output_data = None
+        self.output_data: List[MaskType] = []
 
     def _generate_mask_for_label(
         self,
@@ -78,7 +78,7 @@ class BaseMaskGenerator(IMaskGenerator):
         self,
         input_image: np.ndarray,
         segmented_image: np.ndarray,
-    ) -> IMaskType:
+    ) -> List[MaskType]:
         right_shoe_idx, left_shoe_idx = MaskUtility.get_shoes_index()
         last_mask = None
 
@@ -92,7 +92,10 @@ class BaseMaskGenerator(IMaskGenerator):
             if not self._is_valid_mask(mask, label, left_shoe_idx):
                 continue
 
-            self.output_data = self._generate_output(input_image, mask, label)
+            self.output_data.append({
+                "general_label": label,
+                "mask": self._apply_mask_to_image(input_image, mask)
+            })
             last_mask = mask
 
         return self.output_data

@@ -12,14 +12,14 @@ import cv2
 import torch
 import os
 
+from src.mask_generator.classes.mask_generator import MaskGenerator
 from src.mask_replacer.classes.mask_replacer_base import MaskReplacerBase
+
+from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
 from src.similarity_calculator.similarity_controller import SimilarityController
+
 from src.ssd.nvidia_ssd_model import NVidiaSSDModel
 from src.ssd.single_shot_detector import SingleShotDetector
-
-from src.mask_generator.classes.list_mask_generator import ListMaskGenerator
-from src.mask_generator.classes.mask_generator_controller import MaskGeneratorController
-from src.mask_generator.types.mask_type import IMaskType
 
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation
@@ -27,7 +27,7 @@ from src.segmentation.clothes_segmantion import ClothesSegmentation
 from src.feature_extractor.feature_extractor import FeatureExtractor
 from src.feature_extractor.classes.open_clip import OpenClip
 
-from src.label_mapper.classes.label_mapper_list import LabelMapperList
+from src.label_mapper.classes.label_mapper import LabelMapper
 from src.image_processor import ImageProcessor
 from src.utils import Utils
 
@@ -89,19 +89,15 @@ def main():
     # Rimozione immagini temporanee
     delete_images(img_path, img_ext)
 
-    # Applica le maschere
-
-    # mask_generator = MaskGeneratorController(DictMaskGenerator())
-    # masks = mask_generator.generate_masks(detected_image, segmented_image)
-    
-    mask_generator = MaskGeneratorController(ListMaskGenerator())
-    masks = mask_generator.generate_masks(detected_image, segmented_image)
+    # Applica le maschere    
+    mask_generator = MaskGenerator()
+    mask_list = mask_generator.generate_masks(detected_image, segmented_image)
 
     mask_replacer = MaskReplacerBase(
-        masks,
+        mask_list,
         FeatureExtractor(OpenClip()),
-        SimilarityController(),
-        LabelMapperList(OpenClip())
+        SimilarityController(CosineSimilarityFunction()),
+        LabelMapper(OpenClip())
     )
 
     polyvore_image = mask_replacer.replace_mask(Utils.get_prompt_list())
