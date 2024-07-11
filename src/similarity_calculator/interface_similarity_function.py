@@ -12,7 +12,7 @@ class ISimilarityFunction(ABC):
     """
     @abstractmethod
     def compute_similarity(self, features) -> torch.Tensor:
-        """Calcola il valore di similarità tra due vettori di features
+        """Ritorna una matrice di similarità tra i vettori di features
 
         Args:
         -------

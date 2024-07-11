@@ -7,8 +7,8 @@
 from functools import partial
 from typing import List
 
-from label_mapper.interfaces.label_mapper import ILabelMapper
-from mask_generator.types.dict_mask_type import DictMaskType
+from src.label_mapper.interfaces.label_mapper import ILabelMapper
+from src.mask_generator.types.dict_mask_type import DictMaskType
 
 class LabelMapperDict(ILabelMapper):
     """Classe per il mapping delle label custom alle maschere in formato List

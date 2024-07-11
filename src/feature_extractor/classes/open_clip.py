@@ -11,8 +11,7 @@ import numpy as np
 import open_clip
 from PIL import Image
 
-from feature_extractor.interfaces.interface_clip_model import IClipModel
-
+from src.feature_extractor.interfaces.interface_clip_model import IClipModel
 from src.utils import Utils
 
 class OpenClip(IClipModel):

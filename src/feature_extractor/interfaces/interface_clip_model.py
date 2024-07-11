@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import torch
 
-from feature_extractor.interfaces.interface_inference_model import IInferenceModel
+from src.feature_extractor.interfaces.interface_inference_model import IInferenceModel
 
 class IClipModel(IInferenceModel, ABC):
     """Interfaccia per modello CLIP

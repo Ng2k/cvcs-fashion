@@ -7,8 +7,8 @@ Controller per algoritmo di creazione delle maschere
 """
 import numpy as np
 
-from mask_generator.interfaces.interface_mask_generator import IMaskGenerator
-from mask_generator.types.mask_type import IMaskType
+from src.mask_generator.interfaces.interface_mask_generator import IMaskGenerator
+from src.mask_generator.types.mask_type import IMaskType
 
 class MaskGeneratorController:
     """Controller per la classe di generazione delle maschere

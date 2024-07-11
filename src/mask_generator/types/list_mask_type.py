@@ -7,8 +7,7 @@ from dataclasses import dataclass
 from typing import List
 import torch
 
-from mask_generator.types.mask_type import IMaskType
-
+from src.mask_generator.types.mask_type import IMaskType
 
 @dataclass
 class MaskDict:

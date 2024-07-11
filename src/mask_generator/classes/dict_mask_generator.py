@@ -5,8 +5,8 @@
 """
 import numpy as np
 
-from mask_generator.classes.base_mask_generator import BaseMaskGenerator
-from mask_generator.types.dict_mask_type import DictMaskType
+from src.mask_generator.classes.base_mask_generator import BaseMaskGenerator
+from src.mask_generator.types.dict_mask_type import DictMaskType
 
 class DictMaskGenerator(BaseMaskGenerator):
     """Classe per la generazione delle maschere con output una lista di dictionaries

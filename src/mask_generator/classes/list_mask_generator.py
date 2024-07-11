@@ -6,8 +6,8 @@
 from typing import List
 import numpy as np
 
-from mask_generator.classes.base_mask_generator import BaseMaskGenerator
-from mask_generator.types.list_mask_type import ListMaskType
+from src.mask_generator.classes.base_mask_generator import BaseMaskGenerator
+from src.mask_generator.types.list_mask_type import ListMaskType
 
 class ListMaskGenerator(BaseMaskGenerator):
     """Classe per la generazione delle maschere con output una lista di dictionaries

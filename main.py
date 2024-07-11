@@ -5,7 +5,6 @@
 @Author: Francesco Mancinelli
 """
 import json
-from typing import List
 from PIL import Image
 from matplotlib import pyplot as plt
 import numpy as np
@@ -13,25 +12,25 @@ import cv2
 import torch
 import os
 
-from feature_extractor.classes.open_clip import OpenClip
-from feature_extractor.feature_extractor import FeatureExtractor
-
-from label_mapper.classes.label_mapper_list import LabelMapperList
-from mask_generator.classes.list_mask_generator import ListMaskGenerator
-from mask_generator.classes.mask_generator_controller import MaskGeneratorController
-from mask_generator.types.list_mask_type import ListMaskType
-
-from mask_generator.types.mask_type import IMaskType
-from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
-from src.similarity_calculator.similarity_calculator import SimilarityFunction
-
 from src.ssd.nvidia_ssd_model import NVidiaSSDModel
 from src.ssd.single_shot_detector import SingleShotDetector
 
-from src.image_processor import ImageProcessor
+from src.mask_generator.classes.list_mask_generator import ListMaskGenerator
+from src.mask_generator.classes.mask_generator_controller import MaskGeneratorController
+from src.mask_generator.types.list_mask_type import ListMaskType
+from src.mask_generator.types.mask_type import IMaskType
+
+from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
+from src.similarity_calculator.similarity_calculator import SimilarityFunction
 
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation
+
+from src.feature_extractor.feature_extractor import FeatureExtractor
+from src.feature_extractor.classes.open_clip import OpenClip
+
+from src.label_mapper.classes.label_mapper_list import LabelMapperList
+from src.image_processor import ImageProcessor
 from src.utils import Utils
 
 def load_image(image_url: str) -> np.ndarray:
@@ -74,7 +73,7 @@ def mapping_label_to_mask(masks: IMaskType) -> list:
 
 def features_extraction(masks: ListMaskType) -> list:
     feature_extractor = FeatureExtractor(OpenClip())
-    return [feature_extractor.extract_features(m["mask"]) for m in masks]
+    return [feature_extractor.decode(m["mask"]) for m in masks]
 
 def calculate_similarity(features) -> torch.Tensor:
     similarity_function = SimilarityFunction(CosineSimilarityFunction())

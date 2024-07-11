@@ -6,7 +6,7 @@
 import torch
 import numpy as np
 
-from feature_extractor.interfaces.interface_clip_model import IClipModel
+from src.feature_extractor.interfaces.interface_clip_model import IClipModel
 
 class FeatureExtractor():
     """Classe base per estrarre features da immagini
@@ -14,7 +14,7 @@ class FeatureExtractor():
     def __init__(self, clip_model: IClipModel):
         self.clip_model = clip_model
 
-    def extract_features(self, image: np.ndarray) -> torch.Tensor:
+    def decode(self, image: np.ndarray) -> torch.Tensor:
         """Estrae le features da un'immagine
 
         Args:

@@ -7,7 +7,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
-from mask_generator.types.mask_type import IMaskType
+from src.mask_generator.types.mask_type import IMaskType
 
 class IMaskGenerator(ABC):
     """Interfaccia per il calcolo delle maschere

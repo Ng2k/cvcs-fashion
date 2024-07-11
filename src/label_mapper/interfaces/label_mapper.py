@@ -8,8 +8,8 @@ from abc import ABC, abstractmethod
 from typing import List
 import numpy as np
 
-from feature_extractor.interfaces.interface_inference_model import IInferenceModel
-from mask_generator.types.mask_type import IMaskType
+from src.feature_extractor.interfaces.interface_inference_model import IInferenceModel
+from src.mask_generator.types.mask_type import IMaskType
 
 class ILabelMapper(ABC):
     """Interfaccia per il mapping delle label custom alle maschere dell'immagine

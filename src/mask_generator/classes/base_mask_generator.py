@@ -5,9 +5,9 @@
 """
 import numpy as np
 
-from mask_generator.interfaces.interface_mask_generator import IMaskGenerator
-from mask_generator.types.mask_type import IMaskType
-from mask_generator.utility import MaskUtility
+from src.mask_generator.interfaces.interface_mask_generator import IMaskGenerator
+from src.mask_generator.types.mask_type import IMaskType
+from src.mask_generator.utility import MaskUtility
 
 class BaseMaskGenerator(IMaskGenerator):
     """Classe per la generazione delle maschere

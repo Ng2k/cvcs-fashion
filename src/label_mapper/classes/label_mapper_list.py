@@ -7,8 +7,8 @@
 from typing import List
 from functools import partial
 
-from label_mapper.interfaces.label_mapper import ILabelMapper
-from mask_generator.types.list_mask_type import ListMaskType
+from src.label_mapper.interfaces.label_mapper import ILabelMapper
+from src.mask_generator.types.list_mask_type import ListMaskType
 
 class LabelMapperList(ILabelMapper):
     """Classe per il mapping delle label custom alle maschere in formato List
