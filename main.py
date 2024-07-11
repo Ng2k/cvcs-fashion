@@ -12,6 +12,8 @@ import cv2
 import torch
 import os
 
+from mask_generator.classes.list_mask_generator import ListMaskGenerator
+from mask_generator.mask_generator_controller import MaskGeneratorController
 from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
 from src.similarity_calculator.similarity_calculator import SimilarityFunction
 
@@ -22,7 +24,7 @@ from src.ssd.nvidia_ssd_model import NVidiaSSDModel
 from src.ssd.single_shot_detector import SingleShotDetector
 
 from src.image_processor import ImageProcessor
-from src.mask_processor import MaskProcessor
+from src.mask_generator import MaskProcessor
 
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation
@@ -93,8 +95,8 @@ def main():
     Nota:   Questa funzione non restituisce nulla.
             Salva i risultati intermedi e finali su disco e mostra il risultato
     """
-    img_path = "./static/image"
-    img_ext = ".jpeg"
+    img_path = "./static/image_test"
+    img_ext = ".jpg"
 
     #salvataggio dimensione immagine di input
     input_image =  load_image(img_path + img_ext)
@@ -120,7 +122,8 @@ def main():
     delete_images(img_path, img_ext)
 
     # Applica le maschere
-    masks = MaskProcessor.compute_masks(detected_image, segmented_image)
+    mask_generator = MaskGeneratorController(ListMaskGenerator())
+    masks = mask_generator.generate_masks(detected_image, segmented_image)
     masks_features = features_extraction(masks)
 
     # inferenza maschere con classi open clip
