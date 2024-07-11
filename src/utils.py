@@ -17,8 +17,7 @@ class Utils():
 
         Returns:
         -------
-            str
-                Il device su cui eseguire il modello.
+            str: Il device su cui eseguire il modello.
         """
         return 'cuda' if torch.cuda.is_available() else 'cpu'
 

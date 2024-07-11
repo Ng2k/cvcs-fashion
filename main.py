@@ -13,7 +13,7 @@ import torch
 import os
 
 from src.mask_generator.classes.mask_generator import MaskGenerator
-from src.mask_replacer.classes.mask_replacer_base import MaskReplacerBase
+from src.outfit_component_selector.classes.outfit_component_selector_base import OutfitComponentSelector
 
 from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
 from src.similarity_calculator.similarity_controller import SimilarityController
@@ -93,14 +93,14 @@ def main():
     mask_generator = MaskGenerator()
     mask_list = mask_generator.generate_masks(detected_image, segmented_image)
 
-    mask_replacer = MaskReplacerBase(
+    outfit_component_selector = OutfitComponentSelector(
         mask_list,
         FeatureExtractor(OpenClip()),
         SimilarityController(CosineSimilarityFunction()),
         LabelMapper(OpenClip())
     )
 
-    polyvore_image = mask_replacer.replace_mask(Utils.get_prompt_list())
+    polyvore_image = outfit_component_selector.find_best_fit(Utils.get_prompt_list())
     plt.imshow(polyvore_image)
     plt.show()
 

@@ -1,6 +1,4 @@
 """
-Classe responsabile per l'elaborazione delle immagini.
-
 @Author: Nicola Guerra
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
@@ -23,17 +21,14 @@ class ImageProcessor:
         """
         Ritaglia l'immagine data delle coordinate della bounding box.
 
-        Args
+        Args:
         -------
-        image : np.ndarray
-            L'immagine da ritagliare.
-        bbox : tuple
-            Tupla di coordinate della bounding box.
+            image (np.ndarray): L'immagine da ritagliare.
+            bbox (tuple): Tupla di coordinate della bounding box.
 
-        Returns
+        Returns:
         -------
-        np.ndarray
-            L'immagine ritagliata.
+            np.ndarray: L'immagine ritagliata.
         """
         left, bot, right, top = bbox
         x, y, w, h = [int(val * 300) for val in [left, bot, right - left, top - bot]]
@@ -50,15 +45,13 @@ class ImageProcessor:
         """
         Inclina l'immagine data le coordinate di un tensore PyTorch.
 
-        Parametri
+        Args:
         ----------
-            input_image : PIL.Image
-                L'immagine da inclinare.
+            input_image (PIL.Image): L'immagine da inclinare.
 
-        Ritorna
+        Returns:
         -------
-            PIL.Image
-                L'immagine inclinata.
+            PIL.Image: L'immagine inclinata.
         """
         return input_image
 
@@ -67,17 +60,14 @@ class ImageProcessor:
         """
         Ridimensiona l'immagine mantenendo l'aspect ratio.
 
-        Args
+        Args:
         ----------
-            image : np.ndarray
-                L'immagine da ridimensionare.
-            size : tupla
-                La dimensione per il resize
+            image (np.ndarray): Immagine da ridimensionare.
+            size (tuple): La dimensione per il resize
 
-        Returns
+        Returns:
         -------
-            np.ndarray
-                L'immagine ridimensionata.
+            np.ndarray: L'immagine ridimensionata.
         """
         # Resize immagine usanto INTER_AREA per meno rumore possibile
         resized_image = cv2.resize(image, size, interpolation = cv2.INTER_AREA)
@@ -91,13 +81,11 @@ class ImageProcessor:
 
         Args
         ----------
-            image : np.ndarray
-                Immagine input da filtrare dal rumore.
+            image (np.ndarray): Immagine input da filtrare dal rumore.
 
         Returns
         -------
-            np.ndarray
-                Immagine filtrata.
+            np.ndarray: Immagine filtrata.
         """
         # Converti l'immagine a uint8 se non lo è
         if image.dtype != np.uint8:
