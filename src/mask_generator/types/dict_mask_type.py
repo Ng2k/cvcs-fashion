@@ -6,7 +6,7 @@
 from dataclasses import dataclass
 import numpy as np
 
-from mask_generator.interfaces.interface_mask_type import IMaskType
+from mask_generator.types.mask_type import IMaskType
 
 @dataclass
 class DictMaskType(IMaskType):

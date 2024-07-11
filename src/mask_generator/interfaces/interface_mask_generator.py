@@ -7,6 +7,8 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
+from mask_generator.types.mask_type import IMaskType
+
 class IMaskGenerator(ABC):
     """Interfaccia per il calcolo delle maschere
     """
@@ -16,7 +18,7 @@ class IMaskGenerator(ABC):
         input_image: np.ndarray,
         mask: np.ndarray,
         label: int
-    ):
+    ) -> IMaskType:
         """Genera struttura dati di output
 
         Args:
@@ -36,7 +38,7 @@ class IMaskGenerator(ABC):
         self,
         input_image: np.ndarray,
         segmented_image: np.ndarray
-    ) -> any:
+    ) -> IMaskType:
         """Genera le maschere delle immagini
 
         Args:

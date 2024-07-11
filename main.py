@@ -5,6 +5,7 @@
 @Author: Francesco Mancinelli
 """
 import json
+from typing import List
 from PIL import Image
 from matplotlib import pyplot as plt
 import numpy as np
@@ -12,19 +13,22 @@ import cv2
 import torch
 import os
 
+from feature_extractor.classes.open_clip import OpenClip
+from feature_extractor.feature_extractor import FeatureExtractor
+
+from label_mapper.classes.label_mapper_list import LabelMapperList
 from mask_generator.classes.list_mask_generator import ListMaskGenerator
-from mask_generator.mask_generator_controller import MaskGeneratorController
+from mask_generator.classes.mask_generator_controller import MaskGeneratorController
+from mask_generator.types.list_mask_type import ListMaskType
+
+from mask_generator.types.mask_type import IMaskType
 from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
 from src.similarity_calculator.similarity_calculator import SimilarityFunction
-
-from src.features_extractor.open_clip.model import OpenClipModel
-from src.features_extractor.feature_extractor import FeatureExtractor
 
 from src.ssd.nvidia_ssd_model import NVidiaSSDModel
 from src.ssd.single_shot_detector import SingleShotDetector
 
 from src.image_processor import ImageProcessor
-from src.mask_generator import MaskProcessor
 
 from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
 from src.segmentation.clothes_segmantion import ClothesSegmentation
@@ -55,28 +59,22 @@ def delete_images(img_path: str, img_ext: str) -> None:
         else:
             print(f"The file {file_path} does not exist")
 
-def mapping_label_to_mask(masks: dict) -> list:
-    feature_extractor = FeatureExtractor(OpenClipModel())
+def mapping_label_to_mask(masks: IMaskType) -> list:
+    label_mapper = LabelMapperList(OpenClip())
+
     with open("./prompts_no_desc.json", "r") as prompts_file:
         prompts = json.load(prompts_file).get('prompts')
 
-    map_label_mask_list = []
-    for mask in masks.values():
-        img_tensor = feature_extractor.model.load_and_process_image(mask)
-        inferences = feature_extractor.model.run_inference(img_tensor, prompts)
-        _, index_label = inferences.squeeze(0).max(dim=0)
-        map_label_mask_list.append({
-            "idx_label": index_label.item(),
-            "label": prompts[index_label.item()],
-            "mask": mask
-        })
-    
-    return map_label_mask_list
+    return label_mapper.map_labels_to_masks(masks, prompts)
 
-def features_extraction(masks: dict) -> list:
-    feature_extractor = FeatureExtractor(OpenClipModel())
-    return feature_extractor.extract_masks_features(masks)
+#Versione con masks come dizionario
+#def features_extraction(masks: dict) -> list:
+#    feature_extractor = FeatureExtractor(OpenClip())
+#    return feature_extractor.extract_features(masks)
 
+def features_extraction(masks: List[ListMaskType]) -> list:
+    feature_extractor = FeatureExtractor(OpenClip())
+    return list(map(lambda mask: feature_extractor.extract_features(mask["mask"]), masks))
 def calculate_similarity(features) -> torch.Tensor:
     similarity_function = SimilarityFunction(CosineSimilarityFunction())
     return similarity_function.compute_similarity(features)
@@ -122,9 +120,15 @@ def main():
     delete_images(img_path, img_ext)
 
     # Applica le maschere
+    # mask_generator = MaskGeneratorController(DictMaskGenerator())
+    # masks = mask_generator.generate_masks(detected_image, segmented_image)
+    # feature_extractor = FeatureExtractor(OpenClip())
+    # masks_features = [feature_extractor.extract_features(m["mask"]) for m in masks.values()]
+    
     mask_generator = MaskGeneratorController(ListMaskGenerator())
     masks = mask_generator.generate_masks(detected_image, segmented_image)
-    masks_features = features_extraction(masks)
+    feature_extractor = FeatureExtractor(OpenClip())
+    masks_features = [feature_extractor.extract_features(m["mask"]) for m in masks]
 
     # inferenza maschere con classi open clip
     map_label_mask_list = mapping_label_to_mask(masks)

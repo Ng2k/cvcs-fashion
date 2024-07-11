@@ -5,11 +5,10 @@ Controller per algoritmo di creazione delle maschere
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
 """
-from typing import List
 import numpy as np
 
 from mask_generator.interfaces.interface_mask_generator import IMaskGenerator
-from mask_generator.interfaces.interface_mask_type import IMaskType
+from mask_generator.types.mask_type import IMaskType
 
 class MaskGeneratorController:
     """Controller per la classe di generazione delle maschere
@@ -21,7 +20,7 @@ class MaskGeneratorController:
         self,
         input_image: np.ndarray,
         segmented_image: np.ndarray
-    ) -> List[IMaskType]:
+    ) -> IMaskType:
         """Creazione maschere per l'immagine
 
         Args:

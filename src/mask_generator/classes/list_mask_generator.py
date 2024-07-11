@@ -32,5 +32,5 @@ class ListMaskGenerator(BaseMaskGenerator):
         self,
         input_image: np.ndarray,
         segmented_image: np.ndarray
-    ) -> List[ListMaskType] :
+    ) -> ListMaskType:
         return super().generate_masks(input_image, segmented_image)
