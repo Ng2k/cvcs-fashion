@@ -68,13 +68,14 @@ def mapping_label_to_mask(masks: IMaskType) -> list:
     return label_mapper.map_labels_to_masks(masks, prompts)
 
 #Versione con masks come dizionario
-#def features_extraction(masks: dict) -> list:
+#def features_extraction(masks: DictMaskType) -> list:
 #    feature_extractor = FeatureExtractor(OpenClip())
-#    return feature_extractor.extract_features(masks)
+#    return [feature_extractor.extract_features(mask) for mask in masks.values()]
 
-def features_extraction(masks: List[ListMaskType]) -> list:
+def features_extraction(masks: ListMaskType) -> list:
     feature_extractor = FeatureExtractor(OpenClip())
-    return list(map(lambda mask: feature_extractor.extract_features(mask["mask"]), masks))
+    return [feature_extractor.extract_features(m["mask"]) for m in masks]
+
 def calculate_similarity(features) -> torch.Tensor:
     similarity_function = SimilarityFunction(CosineSimilarityFunction())
     return similarity_function.compute_similarity(features)
@@ -123,7 +124,7 @@ def main():
     # mask_generator = MaskGeneratorController(DictMaskGenerator())
     # masks = mask_generator.generate_masks(detected_image, segmented_image)
     # feature_extractor = FeatureExtractor(OpenClip())
-    # masks_features = [feature_extractor.extract_features(m["mask"]) for m in masks.values()]
+    # masks_features = [feature_extractor.extract_features(mask) for mask in masks.values()]
     
     mask_generator = MaskGeneratorController(ListMaskGenerator())
     masks = mask_generator.generate_masks(detected_image, segmented_image)
