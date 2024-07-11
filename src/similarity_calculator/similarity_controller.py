@@ -7,7 +7,7 @@ from typing import List
 import numpy as np
 import torch
 
-from src.similarity_calculator.interface_similarity_function import ISimilarityFunction
+from src.similarity_calculator.interfaces.interface_similarity_function import ISimilarityFunction
 
 class SimilarityController(ISimilarityFunction):
     """Classe per il calcolo della similarità

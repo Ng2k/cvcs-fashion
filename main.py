@@ -15,14 +15,14 @@ import os
 from src.mask_generator.classes.mask_generator import MaskGenerator
 from src.outfit_component_selector.classes.outfit_component_selector_base import OutfitComponentSelector
 
-from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
+from src.similarity_calculator.classes.cosine_similarity_function import CosineSimilarityFunction
 from src.similarity_calculator.similarity_controller import SimilarityController
 
-from single_shot_detector.classes.nvidia_single_shot_detector import NVidiaSSDModel
+from src.single_shot_detector.classes.nvidia_single_shot_detector import NvidiaSingleShotDetector
 from src.single_shot_detector.single_shot_detector import SingleShotDetector
 
-from src.segmentation.segformer_b2_clothes import SegformerB2Clothes
-from src.segmentation.clothes_segmantion import ClothesSegmentation
+from src.clothes_segmentation.classes.segformer_b2_clothes import SegformerB2Clothes
+from src.clothes_segmentation.clothes_segmentation_controller import ClothesSegmentationController
 
 from src.feature_extractor.feature_extractor import FeatureExtractor
 from src.feature_extractor.classes.open_clip import OpenClip
@@ -35,11 +35,11 @@ def load_image(image_url: str) -> np.ndarray:
     return cv2.imread(image_url)
 
 def ssd_detection(image_url: str) -> np.ndarray:
-    ssd_model = SingleShotDetector(NVidiaSSDModel())
+    ssd_model = SingleShotDetector(NvidiaSingleShotDetector())
     return ssd_model.detect_person_in_image(image_url)
 
 def segmentation(image : Image) -> torch.Tensor:
-    segmentation_model = ClothesSegmentation(SegformerB2Clothes())
+    segmentation_model = ClothesSegmentationController(SegformerB2Clothes())
     return segmentation_model.apply_segmentation(image)
 
 def delete_images(img_path: str, img_ext: str) -> None:

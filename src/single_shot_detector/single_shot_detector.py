@@ -10,20 +10,18 @@ Fornisce metodi per caricare un'immagine, elaborarla e disegnare dei bounding bo
 import numpy as np
 
 from src.image_processor import ImageProcessor
-from single_shot_detector.interfaces.interface_single_shot_detector import SSDModel
+from src.single_shot_detector.interfaces.interface_single_shot_detector import ISingleShotDetector
 
 class SingleShotDetector():
     """
     Classe usata per rappresentare un Single Shot Detector (SSD) model.
     """
 
-    _CONFIDENCE: float = 0.40
-
-    def __init__(self, model: SSDModel):
+    def __init__(self, model: ISingleShotDetector):
         """
         Inizializza un nuovo oggetto SingleShotDetector.
         """
-        self._ssd_model: SSDModel = model
+        self._ssd_model: ISingleShotDetector = model
 
     def _retrieve_image_cropped(self, image_numpy: np.ndarray, bboxes: list) -> np.ndarray:
         """Ritorna l'immagine ritagliata in base alla detection.

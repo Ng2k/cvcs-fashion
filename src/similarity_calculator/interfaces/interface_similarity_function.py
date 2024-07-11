@@ -5,18 +5,19 @@
 """
 
 from abc import ABC, abstractmethod
+from typing import List
 import torch
 
 class ISimilarityFunction(ABC):
     """Interfaccia per il calcolo della similarità tra vettori di features
     """
     @abstractmethod
-    def compute_similarity(self, features) -> torch.Tensor:
+    def compute_similarity(self, features: List[torch.Tensor]) -> torch.Tensor:
         """Ritorna una matrice di similarità tra i vettori di features
 
         Args:
         -------
-            features1 (list[np.ndarray]): vettore di tutte le features delle immagini
+            features1 (List[torch.Tensor]): vettore di tutte le features delle immagini
         
         Returns:
         -------

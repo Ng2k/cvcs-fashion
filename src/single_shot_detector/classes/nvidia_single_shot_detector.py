@@ -12,6 +12,7 @@ class NvidiaSingleShotDetector(ISingleShotDetector):
     """
     Classe concreta per il modello SingleShotDetector di nvidia.
     """
+    _CONFIDENCE: float = 0.40
 
     def __init__(self):
         """

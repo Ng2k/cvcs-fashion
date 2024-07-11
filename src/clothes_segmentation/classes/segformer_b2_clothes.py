@@ -1,8 +1,4 @@
 """
-Implementazione dell'interfaccia SegmentationModel per il modello SegformerB2Clothes.
-
-Fornisce metodi per caricare il modello SegformerB2Clothes e le relative utility di elaborazione.
-
 @Author Nicola Guerra
 @Author: Davide Lupo
 @Author: Francesco Mancinelli
@@ -12,14 +8,12 @@ from torch import nn
 from PIL import Image
 from transformers import SegformerImageProcessor, AutoModelForSemanticSegmentation
 
-from src.segmentation.segmentation_model import SegmentationModel
+from src.clothes_segmentation.interfaces.interface_segmentation_model import ISegmentationModel
 
-class SegformerB2Clothes(SegmentationModel):
+class SegformerB2Clothes(ISegmentationModel):
     """
     Classe concreta per il modello di segmentazione SegFormer_B2_Clothes.
     """
-
-    _CONFIDENCE: float = 0.40
 
     def __init__(self):
         """

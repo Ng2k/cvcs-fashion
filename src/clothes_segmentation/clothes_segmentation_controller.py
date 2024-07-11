@@ -9,25 +9,18 @@ La classe utilizza un modello di segmentation vestiti pre-addestrato.
 from PIL import Image
 import torch
 
-from src.segmentation.segmentation_model import SegmentationModel
+from src.clothes_segmentation.interfaces.interface_segmentation_model import ISegmentationModel
 
-class ClothesSegmentation():
+class ClothesSegmentationController():
     """
     Classe usata per rappresentare un modello SegformerB2Clothes.
-
-    Attributi
-    ----------
-        _ssd_model : SSDModel
-            Modello SSD.
     """
 
-    _CONFIDENCE: float = 0.40
-
-    def __init__(self, model: SegmentationModel):
+    def __init__(self, model: ISegmentationModel):
         """
         Inizializza un nuovo oggetto SingleShotDetector.
         """
-        self._segmentation_model: SegmentationModel = model
+        self._segmentation_model: ISegmentationModel = model
 
     def apply_segmentation(self, image: Image) -> torch.Tensor:
         """Applica la segmentazione all'immagine.
