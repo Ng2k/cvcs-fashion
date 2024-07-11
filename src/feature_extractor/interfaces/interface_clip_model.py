@@ -58,24 +58,6 @@ class IClipModel(IInferenceModel, ABC):
         """
 
     @abstractmethod
-    def _compute_similarity(
-        self,
-        image_features_tensor: torch.Tensor,
-        text_features_tensor: torch.Tensor
-    ) -> torch.Tensor:
-        """Calcola il valore di similarità tra due vettori di features
-
-        Args:
-        -------
-            image_features_tensor (torch.Tensor): tensore di tutte le features delle immagini
-            text_features_tensor (torch.Tensor): tensore di tutte le features del prompt di testo
-        
-        Returns:
-        -------
-            torch.Tensor: tensore con le similarità tra vettori di features
-        """
-
-    @abstractmethod
     def extract_features(self, image: np.ndarray) -> torch.Tensor:
         """Estrae le features da un'immagine
 
