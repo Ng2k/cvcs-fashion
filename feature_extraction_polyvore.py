@@ -5,15 +5,14 @@
 """
 import json
 import time
-
 import torch
 from torch.utils.data import DataLoader
-import open_clip
 
-from feature_extractor.classes.open_clip import OpenClip
-from feature_extractor.feature_extractor import FeatureExtractor
 from polyvore_dataset import PolyvoreDataset
-from utils import Utils
+
+from src.feature_extractor.classes.open_clip import OpenClip
+from src.feature_extractor.feature_extractor import FeatureExtractor
+from src.utils import Utils
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 weight = "./src/feature_extractor/finetuned_clip.pt"
@@ -26,9 +25,9 @@ def write_out_images(out_images: dict) -> None:
 def main():
     start_time = time.time()
 
-    images_dir = "dataset/polyvore_64/"
+    images_dir = "dataset/polyvore_60000/"
     data_loader_options = {
-        "batch_size": 16,
+        "batch_size": 128,
         "shuffle": False,
         "num_workers": 4
     }
@@ -60,8 +59,6 @@ def main():
                 "features": feature_extractor.decode(img_array).tolist(),
                 "label_clip_index": index_label_value,
                 "label_clip": prompt_list[index_label_value],
-                "label_general_index": -1,
-                "label_general": ""
             })
 
         print("---------------------")
