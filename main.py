@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import torch
+import os
 
 from src.similarity_calculator.cosine_similarity_function import CosineSimilarityFunction
 from src.similarity_calculator.similarity_calculator import SimilarityFunction
@@ -37,6 +38,20 @@ def ssd_detection(image_url: str) -> np.ndarray:
 def segmentation(image : Image) -> torch.Tensor:
     segmentation_model = ClothesSegmentation(SegformerB2Clothes())
     return segmentation_model.apply_segmentation(image)
+
+def delete_images(img_path: str, img_ext: str) -> None:
+    files_to_delete = [
+        img_path + "_resized" + img_ext,
+        img_path + "_crop" + img_ext,
+        img_path + "_segmented" + img_ext,
+    ]
+
+    for file_path in files_to_delete:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"Deleted {file_path}")
+        else:
+            print(f"The file {file_path} does not exist")
 
 def mapping_label_to_mask(masks: dict) -> list:
     feature_extractor = FeatureExtractor(OpenClipModel())
@@ -83,7 +98,6 @@ def main():
 
     #salvataggio dimensione immagine di input
     input_image =  load_image(img_path + img_ext)
-    #input_shape = input_image.shape[:2]
 
     # Denoise dell'immagine
     denoise_image = ImageProcessor.denoise_image(input_image)
@@ -101,6 +115,9 @@ def main():
     segmented_image = segmentation(detected_image_pil)
     Image.fromarray(segmented_image.numpy().astype(np.uint8)).save(img_path+"_segmented"+img_ext)
     segmented_image = segmented_image.numpy().astype(np.uint8)
+
+    # Rimozione immagini temporanee
+    delete_images(img_path, img_ext)
 
     # Applica le maschere
     masks = MaskProcessor.compute_masks(detected_image, segmented_image)
@@ -130,7 +147,6 @@ def main():
     mean_similarity_tensor = torch.tensor(mean_similarity_list)
     _, idx_best_similarity = mean_similarity_tensor.max(dim=0)
 
-    #print(images[idx_best_similarity])
     plt.imshow(cv2.imread(images[idx_best_similarity]["path"]))
     plt.show()
 
