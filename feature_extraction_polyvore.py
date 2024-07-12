@@ -25,11 +25,11 @@ def write_out_images(out_images: dict) -> None:
 def main():
     start_time = time.time()
 
-    images_dir = "dataset/polyvore_60000/"
+    images_dir = "dataset/polyvore_40000/"
     data_loader_options = {
-        "batch_size": 128,
+        "batch_size": 1024,
         "shuffle": False,
-        "num_workers": 4
+        "num_workers": 8
     }
     dataset = PolyvoreDataset(images_dir, transform = None)
     dataloader = DataLoader(dataset, **data_loader_options)
