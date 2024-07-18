@@ -12,7 +12,7 @@ from PIL import Image
 
 from src.features_extractor.interface_feature_extractor_model import IFeatureExtractorModel
 from src.features_extractor.open_clip.options import OpenClipOptions
-from src.utils import Utils
+from src.utils.utils import get_device
 
 class OpenClipModel(IFeatureExtractorModel):
     """Implementazione Open Clip
@@ -22,7 +22,7 @@ class OpenClipModel(IFeatureExtractorModel):
     _WEIGHTS_PATH = path.join(path.dirname(__file__), "finetuned_clip.pt")
 
     def __init__(self):
-        self.device = Utils.get_device()
+        self.device = get_device()
         self.model, self.preprocess, self.tokenizer = self.load_model({
             "model_name": self._MODEL_NAME,
             "weights_url": self._WEIGHTS_PATH,
@@ -42,7 +42,7 @@ class OpenClipModel(IFeatureExtractorModel):
         return (model, preprocess, tokenizer)
 
     def load_and_process_image(self, image: np.ndarray) -> torch.Tensor:
-        img = self.preprocess(Image.fromarray(image)).to(Utils.get_device())
+        img = self.preprocess(Image.fromarray(image)).to(get_device())
         return img
 
     def _tokenize_prompts(self, prompts: list):

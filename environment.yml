@@ -16,6 +16,8 @@ dependencies:
   - chardet
   - matplotlib
   - opencv
+  - albumentations
+  - wandb
   - pip:
     - opencv-python
     - open-clip-torch==2.20.0

@@ -167,3 +167,4 @@ cython_debug/
 feature_vectors_polyvore.json
 dataset/
 polyvore_feature_vectors/*
+checkpoints/*
