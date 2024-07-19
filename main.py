@@ -35,7 +35,7 @@ import os
 from src.model_args import Args
 args = Args()
 
-args.data_dir = f"{os.getcwd()}/dataset/polyvore_outfit"
+args.data_dir = f"{os.getcwd()}/dataset/polyvore_outfits"
 args.checkpoint_dir = f"{os.getcwd()}/checkpoints"
 args.model_path = f"{os.getcwd()}/checkpoints/outfit_transformer/cp/240608/AUC0.908.pth"
 
@@ -44,7 +44,7 @@ args.num_workers = 4
 args.test_batch_size = 128
 args.with_cuda = True
 
-file_path = f"{os.getcwd()}/dataset/polyvore_outfit"
+file_path = f"{os.getcwd()}/dataset/polyvore_outfits"
 
 def load_image(image_url: str) -> np.ndarray:
     return cv2.imread(image_url)
@@ -186,7 +186,7 @@ def main():
     # salvataggio su disco delle maschere
     mask_values = masks.values()
     for i, mask in enumerate(mask_values):
-        cv2.imwrite(f"{os.getcwd()}/dataset/polyvore_outfit/images/{i}.jpg", mask)
+        cv2.imwrite(f"{os.getcwd()}/dataset/polyvore_outfits/images/{i}.jpg", mask)
 
     # Define the new element you want to add
     items = []
@@ -236,7 +236,7 @@ def main():
     cuda_condition = torch.cuda.is_available() and args.with_cuda
     device = torch.device("cuda:0" if cuda_condition else "cpu")
 
-    args.model_path = f"{os.getcwd()}/checkpoints/outfit_transformer/cir/240610/ACC0.647.pth"
+    args.model_path = f"{os.getcwd()}/checkpoints/outfit_transformer/cir/240719/ACC0.962.pth"
 
     model, input_processor = load_model(args)
     model.to(device)
@@ -265,7 +265,7 @@ def main():
     
     # Calcolo del numero di gruppi da creare basato sulla lunghezza della lista e sulla dimensione del gruppo (12)
     polyvore_answer_list = data[category_to_retrieve]
-    num_groups = len(polyvore_answer_list) // 12
+    num_groups = 200 #len(polyvore_answer_list) // 12
     data_to_write = [
         {
             'question': question,

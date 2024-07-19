@@ -11,24 +11,24 @@ from torch.optim.lr_scheduler import OneCycleLR
 from torch.optim import AdamW
 from tqdm import tqdm
 
-from src.utils.utils import get_device
+from src.utils.utils import get_device, save_model
 
 from src.models.recommender import RecommendationModel
+from src.models.load import load_model
+
 from src.datasets.polyvore import DatasetArguments, PolyvoreDataset
 
-from src.models.load import load_model
 from src.loss.info_nce import InfoNCE
-from src.utils.utils import save_model
 
-from model_args import Args
+from src.model_args import Args
 args = Args()
 
-args.data_dir = f"{os.getcwd()}/../datasets/polyvore_outfits"
-args.checkpoint_dir = f"{os.getcwd()}/../checkpoints"
-args.model_path = f"{os.getcwd()}/../checkpoints/outfit_transformer/cir/240610/ACC0.647.pth"
+args.data_dir = f"{os.getcwd()}/dataset/polyvore_outfits"
+args.checkpoint_dir = f"{os.getcwd()}/checkpoints"
+args.model_path = f"{os.getcwd()}/checkpoints/outfit_transformer/cir/240610/ACC0.647.pth"
 
 # Training Setting
-args.n_epochs = 3
+args.n_epochs = 30
 args.num_workers = 4
 args.train_batch_size = 128
 args.val_batch_size = 128
@@ -278,19 +278,19 @@ if __name__ == "__main__":
         num_workers=args.num_workers
     )
 
-    val_dataset_args = DatasetArguments(
-        polyvore_split=args.polyvore_split,
-        task_type="fitb",
-        dataset_type="valid"
-    )
+    #val_dataset_args = DatasetArguments(
+    #    polyvore_split=args.polyvore_split,
+    #    task_type="fitb",
+    #    dataset_type="valid"
+    #)
 
-    val_dataset = PolyvoreDataset(args.data_dir, val_dataset_args, input_processor)
-    val_dataloader = DataLoader(
-        dataset=val_dataset,
-        batch_size=args.val_batch_size,
-        shuffle=False,
-        num_workers=args.num_workers
-    )
+    #val_dataset = PolyvoreDataset(args.data_dir, val_dataset_args, input_processor)
+    #val_dataloader = DataLoader(
+    #    dataset=val_dataset,
+    #    batch_size=args.val_batch_size,
+    #    shuffle=False,
+    #    num_workers=args.num_workers
+    #)
 
     optimizer = AdamW(model.parameters(), lr=args.lr)
     scheduler = OneCycleLR(
@@ -307,13 +307,16 @@ if __name__ == "__main__":
             epoch, model, optimizer, scheduler,
             dataloader=train_dataloader, device=device, is_train=True, use_wandb=args.use_wandb
         )
-        model.eval()
-        with torch.no_grad():
-            val_loss, val_acc = fitb_iteration(
-                epoch, model, optimizer, scheduler,
-                dataloader=val_dataloader, device=device, is_train=False, use_wandb=args.use_wandb
-            )
-        if val_acc >= best_acc:
-            best_acc = val_acc
-            model_name = f'ACC{val_acc:.3f}'
-            save_model(model, save_dir, model_name, device)
+        #model.eval()
+        #with torch.no_grad():
+        #    val_loss, val_acc = fitb_iteration(
+        #        epoch, model, optimizer, scheduler,
+        #        dataloader=val_dataloader, device=device, is_train=False, use_wandb=args.use_wandb
+        #    )
+        
+        model_name = f'ACC{train_acc:.3f}'
+        save_model(model, save_dir, model_name, device)
+        #if val_acc >= best_acc:
+        #    best_acc = val_acc
+        #    model_name = f'ACC{val_acc:.3f}'
+        #    save_model(model, save_dir, model_name, device)
