@@ -335,7 +335,7 @@ def main():
     
     print(img_ret)
     plt.imshow(cv2.imread(
-        f"{os.getcwd()}/dataset/polyvore_outfit/images/{img_ret}.jpg",
+        f"{os.getcwd()}/dataset/polyvore_outfits/images/{img_ret}.jpg",
         cv2.COLOR_BGR2RGB
     ))
     plt.show()

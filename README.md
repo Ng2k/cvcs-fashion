@@ -7,8 +7,7 @@ Repository per il progetto dell'esame di Computer Vision and Cognitive Systems 2
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Pesi pre-addestrati](#pesi-pre-addestrati)
-  - [Contributing](#contributing)
-  - [Changelog](#changelog)
+  - [Get Started](#get-started)
   - [License](#license)
   - [Authors](#authors)
 
@@ -19,17 +18,30 @@ L'obiettivo di questo progetto è sviluppare un sistema di raccomandazione di ou
 ## Pesi pre-addestrati
 Scaricare i [pesi pre-addestrati](https://github.com/aimagelab/open-fashion-clip/releases/download/open-fashion-clip/finetuned_clip.pt) e inserire il file all'interno della cartella `./src/open_fashion_clip/`
 
-## Contributing
+## Get Started
+Installare le dipendenze esterne del progetto:
 
-[Clicca qui per il file di contributing](./CONTRIBUTING.md). In questo file viene spiegato come contribuire al progetto usato standard e convenzioni per messaggi dei commit di github e per la programmazione
+```
+$ conda env create -f environment.yml
+$ conda activate cvcs-fashion
+```
 
-## Changelog
+Questo comando crea l'ambiente di sviluppo con anaconda
 
-Il file di changelog si trova all'interno della cartella `.chglog/` ed è creato automaticamente grazie al software [git-chglog](https://github.com/git-chglog/git-chglog)
+Per far partire la pipeline immettere il comando nella cartella del progetto
 
-Per installarlo leggere la repository su github (ma basta che lo abbia solo una persona)
+```
+$ python ./main.py
+```
 
-[Clicca qui per il file di changelog](./CHANGELOG.md)
+L'output calcolato verrà mostrato all'utente mediante la libreria `matplotlib`
+
+L'immagine di input è da inserire nella cartella `./static/` e nel file `main.py` alle righe 150 e 151 bisogna cambiare i nomi delle variabili.
+
+```python
+img_path = "./static/image_test_2"
+img_ext = ".jpg"
+```
 
 ## License
 
